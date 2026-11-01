@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+backend/farmers_db.json
+backend/__pycache__/
+*.py[cod]
+node_modules/
+backend/node_modules/
+.vercel/
+.venv/
+venv/

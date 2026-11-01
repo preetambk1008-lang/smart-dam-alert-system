@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/", "destination": "/frontend/index.html" },
+    { "source": "/farmer", "destination": "/frontend/farmer.html" },
+    { "source": "/farmer.html", "destination": "/frontend/farmer.html" }
+  ],
+  "regions": ["bom1"],
+  "functions": {
+    "api/[...path].py": {
+      "maxDuration": 60
+    }
+  }
+}

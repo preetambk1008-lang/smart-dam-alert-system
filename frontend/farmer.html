@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f3f8fa">
+  <title>Farmer Portal | JalSuraksha</title>
+  <style>
+    :root{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#102b3b;background:#f3f7fa;font-synthesis:none;text-rendering:optimizeLegibility}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 90% 0%,#d9f0f2 0,transparent 34%),#f3f7fa;min-height:100vh}
+    a{color:inherit}.shell{max-width:1220px;margin:auto;padding:0 28px}.topbar{height:76px;background:rgba(255,255,255,.9);border-bottom:1px solid #dce7ec;display:flex;align-items:center;position:sticky;top:0;z-index:5;backdrop-filter:blur(16px)}
+ .toprow{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%}.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#19bdd1,#0876bd);color:white;font-size:21px;box-shadow:0 8px 20px #0d96aa33}.brand strong{font-size:20px;letter-spacing:-.04em}.brand small{display:block;color:#667d8b;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+    .hero{padding:48px 0 25px;display:grid;grid-template-columns:1.2fr .8fr;gap:34px;align-items:end}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.19em;text-transform:uppercase;color:#078695}.hero h1{font-size:clamp(34px,5vw,56px);line-height:1.05;letter-spacing:-.055em;margin:12px 0;color:#102d3e}.hero p{font-size:16px;line-height:1.65;color:#5e7685;max-width:65ch;margin:0}.hero-side{justify-self:end;text-align:right;color:#526e7f;font-size:13px;line-height:1.7}.hero-side strong{display:block;color:#15384c;font-size:15px}
+    .notice{display:flex;gap:12px;align-items:flex-start;border:1px solid #e9d29c;background:#fff9e9;color:#765516;border-radius:14px;padding:13px 16px;font-size:13px;line-height:1.55;margin:0 0 20px}.notice b{color:#694400}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.metric{padding:19px 20px;border:1px solid #dce7eb;background:linear-gradient(145deg,#fff,#f8fbfc);border-radius:17px;box-shadow:0 8px 25px #1a42570a;min-width:0}.metric-label{display:flex;justify-content:space-between;gap:8px;color:#6a8290;font-size:11px;font-weight:800;letter-spacing:.065em;text-transform:uppercase}.metric-value{margin-top:13px;font-size:32px;line-height:1.1;font-weight:850;letter-spacing:-.055em;color:#15384c;white-space:nowrap}.metric-value span{font-size:12px;font-weight:650;letter-spacing:0;color:#6d8390}.metric-foot{margin-top:9px;color:#687f8c;font-size:12px;line-height:1.45}.state-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#14a773;margin-right:7px}.state-dot.ORANGE{background:#e59b18}.state-dot.RED{background:#e7475c}.state-dot.YELLOW{background:#cfaa20}
+    .content{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(340px,.75fr);gap:20px;padding:22px 0 52px}.panel{background:#fff;border:1px solid #dce7eb;border-radius:20px;box-shadow:0 10px 34px #1b45570b;overflow:hidden}.panel-head{padding:22px 24px 18px;border-bottom:1px solid #e8eef1}.panel-head h2{margin:0;font-size:20px;letter-spacing:-.03em;color:#16394d}.panel-head p{margin:7px 0 0;color:#718692;font-size:13px;line-height:1.55}.form-body{padding:22px 24px 24px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{margin-bottom:15px}.field label{display:block;font-size:12px;font-weight:750;color:#38586a;margin-bottom:6px}.field input,.field select{width:100%;height:44px;border:1px solid #cfdee4;border-radius:10px;background:#fbfdfe;color:#16384a;padding:0 12px;font:inherit;font-size:14px;outline:none}.field input:focus,.field select:focus{border-color:#1ca5b3;box-shadow:0 0 0 3px #21a8b31c}.field input::placeholder{color:#9aabb4}.hint{font-size:11px;line-height:1.45;color:#7b8e98;margin-top:5px}.location-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:1px solid #dce9ed;border-radius:12px;background:#f7fafb;margin-bottom:16px}.location-row p{font-size:12px;color:#647d8b;line-height:1.5;margin:0}.secondary{border:1px solid #b9dfe2;background:#effafb;border-radius:9px;padding:9px 11px;color:#087b87;font-weight:750;font-size:12px;white-space:nowrap;cursor:pointer}.consent{display:flex;gap:10px;align-items:flex-start;color:#647b88;font-size:12px;line-height:1.55;margin:5px 0 17px}.consent input{margin-top:3px;accent-color:#0c9ba7}.submit{width:100%;height:48px;border:0;border-radius:11px;background:linear-gradient(100deg,#098ca5,#0875bd);color:white;font-size:14px;font-weight:800;box-shadow:0 9px 20px #0a8da52a;cursor:pointer}.submit:disabled{opacity:.6;cursor:wait}.feedback{display:none;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5;margin-bottom:14px}.feedback.show{display:block}.feedback.success{color:#126749;background:#e9f8f1;border:1px solid #bce9d2}.feedback.error{color:#963d3d;background:#fff0ef;border:1px solid #f0c6c2}
+ .side-body{padding:22px 24px}.level-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border-radius:99px;background:#edf8f6;color:#167054;font-size:12px;font-weight:800}.side-body h3{font-size:15px;margin:20px 0 8px;color:#25495c}.side-body p,.side-body li{font-size:13px;line-height:1.65;color:#657d8b}.side-body ul{padding-left:19px;margin:8px 0 0}.rule{height:1px;background:#e7eef1;margin:20px 0}.footer{border-top:1px solid #dce7eb;padding:20px 0 28px;color:#7d909a;font-size:12px;line-height:1.6}.footer .shell{display:flex;justify-content:space-between;gap:20px}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;gap:16px}.hero-side{justify-self:start;text-align:left}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.content{grid-template-columns:1fr}}
+ @media(max-width:560px){.shell{padding:0 16px}.topbar{height:68px}.brand strong{font-size:17px}.hero{padding:34px 0 20px}.hero p{font-size:14px}.metrics{gap:9px}.metric{padding:14px 13px;border-radius:14px}.metric-value{font-size:25px}.metric-label{font-size:9px}.metric-foot{font-size:11px}.grid2{grid-template-columns:1fr;gap:0}.panel-head,.form-body,.side-body{padding-left:17px;padding-right:17px}.location-row{align-items:flex-start;flex-direction:column}.footer .shell{flex-direction:column}}
+    /* Warm field-notes palette: forest green, cream and harvest gold. */
+    :root{color:#20362c;background:#f5f3eb;scroll-behavior:smooth}
+    body{background:radial-gradient(ellipse at 92% 7%,#e4ead5 0,transparent 32%),linear-gradient(180deg,#f7f5ee 0%,#f2f1e9 100%);color:#20362c}
+    .shell{max-width:1320px}
+    .topbar{background:rgba(250,249,244,.9);border-bottom-color:#dce2d4;box-shadow:0 4px 20px #20362c08}
+    .logo{background:linear-gradient(145deg,#78944d,#315b3d);box-shadow:0 8px 20px #315b3d30}
+    .brand small{color:#71816a}
+    .hero{padding-top:58px;padding-bottom:30px;grid-template-columns:1.35fr .65fr}
+    .eyebrow{color:#a7662d;letter-spacing:.2em}
+    .hero h1{color:#1f392c;letter-spacing:-.06em}
+    .hero p{color:#687568;max-width:60ch}
+    .hero-side{padding:16px 20px;border:1px solid #d9dfd0;border-radius:16px;background:#fbfaf5;box-shadow:0 12px 28px #2939270a}
+    .hero-side strong{color:#315b3d}
+    .notice{border-color:#e4cf9f;background:#fff8e8;color:#795a27;border-radius:13px;box-shadow:0 8px 24px #6c56200b}
+    .notice b{color:#624516}
+    .metrics{gap:16px}
+    .metric{position:relative;border-color:#dce2d7;background:linear-gradient(150deg,#fffefa,#f9f8f1);border-radius:18px;box-shadow:0 10px 26px #253d2c0a;transition:transform .18s ease,box-shadow .18s ease}
+    .metric:hover{transform:translateY(-3px);box-shadow:0 16px 32px #253d2c14}
+    .metric:nth-child(1){border-top:3px solid #7a9b4b}.metric:nth-child(2){border-top:3px solid #b78638}.metric:nth-child(3){border-top:3px solid #638866}.metric:nth-child(4){border-top:3px solid #c17655}
+    .metric-label{color:#778270}.metric-value{color:#294936}.metric-value span,.metric-foot{color:#778270}
+    .content{grid-template-columns:minmax(0,1.2fr) minmax(330px,.8fr);gap:22px;padding-top:24px}
+    .panel{border-color:#dce2d7;border-radius:20px;background:#fffefa;box-shadow:0 16px 38px #243d2d0d}
+    .panel-head{background:linear-gradient(110deg,#fffefa,#f7f7ef);border-bottom-color:#e7e9df}
+    .panel-head h2{color:#294936}.panel-head p{color:#748073}
+    .field label{color:#465d49}
+    .field input,.field select{border-color:#d5ded1;border-radius:11px;background:#fcfcf8;color:#263d2d;transition:border-color .15s ease,box-shadow .15s ease}
+    .field input:focus,.field select:focus{border-color:#78944d;box-shadow:0 0 0 4px #78944d20}
+    .field input::placeholder{color:#a2aa9c}.hint{color:#83907e}
+    .location-row{border-color:#dce4d5;background:#f6f7ef}
+    .location-row p{color:#687867}.location-row p b{color:#385840}
+    .secondary{border-color:#b8c9a5;background:#edf2e4;color:#416337;border-radius:10px;transition:background .15s ease,transform .15s ease}
+    .secondary:hover{background:#e2ebd5;transform:translateY(-1px)}
+    .consent{color:#6d7c6b}.consent input{accent-color:#587b43}
+    .submit{background:linear-gradient(100deg,#315b3d,#557a43);box-shadow:0 10px 22px #315b3d25;border-radius:12px;transition:transform .15s ease,filter .15s ease}
+    .submit:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.06)}
+    .feedback.success{color:#315b3d;background:#edf5e8;border-color:#c8ddbc}.feedback.error{color:#8f473a;background:#fff1e9;border-color:#efcbbc}
+    .level-chip{background:#edf3e5;color:#456b3d}.state-dot{background:#4d9a69}.state-dot.ORANGE{background:#d99127}.state-dot.RED{background:#c95147}.state-dot.YELLOW{background:#c4a43b}
+    .side-body h3{color:#39553d}.side-body p,.side-body li{color:#6e7d6d}.rule{background:#e4e8dd}
+    .footer{border-top-color:#dce2d7;color:#7f8a79}
+    @media(max-width:900px){.hero{grid-template-columns:1fr}.hero-side{justify-self:stretch;text-align:left}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="shell toprow">
+    <a class="brand" href="/farmer"><span class="logo">🌊</span><span><strong>JalSuraksha</strong><small>Farmer & community portal</small></span></a>
+  </div></header>
+  <main class="shell">
+    <section class="hero">
+      <div><div class="eyebrow">Cauvery basin · KRS dam</div><h1>Stay informed.<br>Stay prepared.</h1><p>See the latest project dam telemetry and register your farmland contact details so the operations team can reach you with relevant alerts.</p></div>
+      <div class="hero-side"><strong>Krishnarajasagara · Karnataka</strong><span id="updatedAt">Loading telemetry…</span><br><span>Farmer services · JalSuraksha</span></div>
+    </section>
+    <div class="notice"><span aria-hidden="true">ℹ️</span><span><b>Project demonstration:</b> Telemetry on this page may be simulated and is not an official government warning. Follow instructions from district authorities and emergency services.</span></div>
+    <section class="metrics" aria-label="Dam status">
+      <article class="metric"><div class="metric-label"><span>Reservoir storage</span><span>TMC</span></div><div class="metric-value" id="storage">—</div><div class="metric-foot" id="storageFoot">Loading capacity…</div></article>
+      <article class="metric"><div class="metric-label"><span>Water level</span><span>Elevation</span></div><div class="metric-value" id="water">—</div><div class="metric-foot" id="waterFoot">Loading level…</div></article>
+      <article class="metric"><div class="metric-label"><span>Catchment inflow</span><span>Inflow</span></div><div class="metric-value" id="inflow">—</div><div class="metric-foot">Current modeled inflow</div></article>
+      <article class="metric"><div class="metric-label"><span>Spillway discharge</span><span>Outflow</span></div><div class="metric-value" id="outflow">—</div><div class="metric-foot" id="outflowFoot">Current modeled release</div></article>
+    </section>
+    <section class="content">
+      <article class="panel" id="register">
+        <div class="panel-head"><h2>Register your farmland</h2><p>Share the contact and location details the dam operations team needs to route alerts accurately. Your contact details are not shown on this public page.</p></div>
+        <div class="form-body">
+          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+          <form id="farmerForm">
+            <div class="grid2">
+              <div class="field"><label for="name">Full name *</label><input id="name" name="name" maxlength="100" autocomplete="name" placeholder="Your name" required></div>
+              <div class="field"><label for="phone">Mobile number *</label><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+91 98765 43210" pattern="(?:\+?91)?[6-9][0-9]{9}|91[6-9][0-9]{9}" required><div class="hint">Indian mobile number for SMS and WhatsApp alerts.</div></div>
+            </div>
+            <div class="field"><label for="email">Email address *</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com" required><div class="hint">Enter an inbox you can access. The team may use it for email alerts.</div></div>
+            <div class="grid2">
+              <div class="field"><label for="surveyNumber">Survey number *</label><input id="surveyNumber" name="surveyNumber" maxlength="50" placeholder="e.g. 142/3" required></div>
+              <div class="field"><label for="village">Village / taluk *</label><input id="village" name="village" maxlength="100" placeholder="Your village" required></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label for="district">District *</label><select id="district" name="district" required><option value="Mandya">Mandya</option><option value="Mysuru">Mysuru</option><option value="Other">Other</option></select></div>
+              <div class="field"><label for="cropType">Main crop</label><select id="cropType" name="cropType"><option>Paddy (Rice)</option><option>Sugarcane</option><option>Ragi</option><option>Coconut</option><option>Other</option></select></div>
+            </div>
+            <div class="field"><label for="landAreaAcres">Land area (acres)</label><input id="landAreaAcres" name="landAreaAcres" type="number" min="0.1" max="10000" step="0.1" value="1"></div>
+            <div class="location-row"><p><b>Farmland location</b><br><span id="locationText">Use GPS or enter your farm coordinates below. Accurate location helps staff assess downstream distance.</span></p><button class="secondary" id="locateButton" type="button">◎ Use my location</button></div>
+            <details open style="margin:-4px 0 16px;color:#587181;font-size:12px"><summary style="cursor:pointer;font-weight:700">Farm location coordinates (required for distance-based alerts)</summary><div class="grid2" style="margin-top:12px"><div class="field"><label for="latitude">Latitude *</label><input id="latitude" name="latitude" type="number" min="-90" max="90" step="0.00001" placeholder="Use location or enter latitude" required></div><div class="field"><label for="longitude">Longitude *</label><input id="longitude" name="longitude" type="number" min="-180" max="180" step="0.00001" placeholder="Use location or enter longitude" required></div></div></details>
+            <div aria-hidden="true" style="position:absolute;left:-10000px"><label for="website">Leave this field empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+            <label class="consent"><input type="checkbox" name="consent" required><span>I agree to share these details with the JalSuraksha operations team for farmland registration and project alert notifications. I understand these contact details are not verified until the team confirms them.</span></label>
+            <button class="submit" id="submitButton" type="submit">Submit registration</button>
+          </form>
+        </div>
+      </article>
+      <aside class="panel">
+        <div class="panel-head"><h2>Current basin status</h2><p>Telemetry refreshes automatically while this page is open.</p></div>
+        <div class="side-body">
+          <span class="level-chip"><i class="state-dot" id="alertDot"></i><span id="alertLevel">Loading status…</span></span>
+          <h3>What happens after registration?</h3>
+ <ul><li>Your registration is added to the operations registry.</li><li>The operations team can review your details and send relevant alerts.</li><li>Please make sure your contact details are correct for email and SMS delivery.</li></ul>
+          <div class="rule"></div>
+          <h3>Safety information</h3><p>This student project does not replace official flood warnings. In an emergency, follow local government and disaster management instructions.</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <footer class="footer"><div class="shell"><span>JalSuraksha · Farmer and community services</span><span>Project demonstration · KRS / Cauvery basin</span></div></footer>
+  <script>
+    const apiBase = location.hostname === 'localhost' ? 'http://127.0.0.1:5000' : '';
+    const number = value => Number(value || 0).toLocaleString('en-IN');
+    async function loadTelemetry() {
+      try {
+        const response = await fetch(`${apiBase}/api/public/dam`, { cache: 'no-store' });
+        if (!response.ok) throw new Error('Telemetry unavailable');
+        const { dam, evaluation } = await response.json();
+        document.getElementById('storage').innerHTML = `${Number(dam.currentTmc).toFixed(1)} <span>/ ${Number(dam.maxCapacityTmc).toFixed(2)} TMC</span>`;
+        document.getElementById('storageFoot').textContent = `${evaluation.fillPercentage}% of reservoir capacity`;
+        document.getElementById('water').innerHTML = `${Number(dam.waterLevelMeters).toFixed(2)} <span>m RL</span>`;
+        document.getElementById('waterFoot').textContent = `Full reservoir level: ${Number(dam.fullReservoirLevelMeters).toFixed(2)} m`;
+        document.getElementById('inflow').innerHTML = `${number(dam.inflowCusecs)} <span>cusecs</span>`;
+        document.getElementById('outflow').innerHTML = `${number(dam.outflowCusecs)} <span>cusecs</span>`;
+        document.getElementById('outflowFoot').textContent = evaluation.gateStatus;
+        document.getElementById('alertLevel').textContent = `${evaluation.alertLevel} · ${evaluation.alertTitle}`;
+        document.getElementById('alertDot').className = `state-dot ${evaluation.alertLevel}`;
+        document.getElementById('updatedAt').textContent = dam.lastUpdated ? `Updated ${new Date(dam.lastUpdated).toLocaleString()}` : 'Telemetry available';
+      } catch (_) {
+        document.getElementById('updatedAt').textContent = 'Telemetry currently unavailable';
+        document.getElementById('alertLevel').textContent = 'Status unavailable';
+      }
+    }
+    document.getElementById('locateButton').addEventListener('click', () => {
+      const button = document.getElementById('locateButton');
+      const label = document.getElementById('locationText');
+      if (!navigator.geolocation) { label.textContent = 'Location is unavailable in this browser. Enter coordinates manually.'; return; }
+      button.disabled = true; button.textContent = 'Locating…';
+      navigator.geolocation.getCurrentPosition(position => {
+        document.getElementById('latitude').value = position.coords.latitude.toFixed(5);
+        document.getElementById('longitude').value = position.coords.longitude.toFixed(5);
+        label.textContent = 'Location added. Coordinates are used to estimate distance from KRS Dam.';
+        button.disabled = false; button.textContent = '◎ Location added';
+      }, () => {
+        label.textContent = 'Could not get your location. Allow location access or enter coordinates manually.';
+        button.disabled = false; button.textContent = '◎ Try again';
+      }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 });
+    });
+    document.getElementById('farmerForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const button = document.getElementById('submitButton');
+      const feedback = document.getElementById('feedback');
+      const values = Object.fromEntries(new FormData(form).entries());
+      const payload = { ...values, consent: form.elements.consent.checked, landAreaAcres: Number(values.landAreaAcres || 1), latitude: Number(values.latitude), longitude: Number(values.longitude) };
+      button.disabled = true; button.textContent = 'Submitting…'; feedback.className = 'feedback';
+      try {
+        const response = await fetch(`${apiBase}/api/public/farmers/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Registration could not be completed.');
+        feedback.textContent = `Registration received for ${data.farmer.name}. The operations registry now has your details. Keep your phone and email available for the team to verify.`;
+        feedback.className = 'feedback success show';
+        form.reset();
+        document.getElementById('landAreaAcres').value = '1';
+        document.getElementById('latitude').value = '';
+        document.getElementById('longitude').value = '';
+      } catch (error) {
+        feedback.textContent = error.message || 'Could not reach the registration service. Please try again.';
+        feedback.className = 'feedback error show';
+      } finally { button.disabled = false; button.textContent = 'Submit registration'; }
+    });
+    loadTelemetry(); setInterval(loadTelemetry, 30000);
+  </script>
+</body>
+</html>

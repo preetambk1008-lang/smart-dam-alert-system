@@ -1,0 +1,14 @@
+{
+  "name": "smart-dam-backend",
+  "version": "1.0.0",
+  "description": "Smart Dam Water Level Monitoring & Tiered Flood Alert System - Civil Engineering Capstone",
+  "main": "server.py",
+  "scripts": {
+    "start": "py -3 server.py",
+    "dev": "py -3 server.py"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}

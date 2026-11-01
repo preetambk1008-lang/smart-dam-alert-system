@@ -1,0 +1,2398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JalSuraksha - Smart Dam Hydrology & 3-Way Flood Early Warning System</title>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- React 18 & Babel Standalone CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Leaflet.js CSS & JS for Interactive GIS Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+
+<style>
+    :root { color-scheme:light; --canvas:#f2f6f9; --paper:#ffffff; --ink:#142b3b; --muted:#607788; --line:#dce6ec; --navy:#102638; --teal:#0d8794; }
+    * { box-sizing:border-box; }
+    html,body,#root { width:100%; min-height:100%; margin:0; }
+    body { overflow-x:hidden; color:var(--ink); background:var(--canvas); font-family:Inter,system-ui,sans-serif; }
+    #root > div { display:block; min-height:100vh; width:100%; background:var(--canvas); }
+    #root > div > header { position:fixed!important; inset:0 auto 0 0; z-index:1100; display:flex; flex-direction:column; width:264px; height:100vh; overflow-y:auto; padding:25px 16px 20px!important; color:#eaf4f8; background:linear-gradient(180deg,#10283a 0%,#0d2131 100%)!important; border:0!important; border-right:1px solid #223d50!important; box-shadow:8px 0 30px rgba(22,48,66,.08)!important; backdrop-filter:none!important; }
+    #root > div > header .max-w-7xl { width:100%; max-width:none!important; margin:0!important; }
+    #root > div > header > div:first-child { display:flex!important; flex-direction:column!important; align-items:stretch!important; justify-content:flex-start!important; gap:24px!important; }
+    #root > div > header > div:first-child > div:first-child { display:flex!important; align-items:flex-start!important; gap:12px!important; min-width:0; }
+    #root > div > header > div:first-child > div:first-child > div:last-child { min-width:0; }
+    #root > div > header h1 { margin:0!important; color:#f2f8fb!important; font-size:21px!important; line-height:1.15!important; letter-spacing:-.045em!important; white-space:nowrap; background:none!important; -webkit-text-fill-color:#f2f8fb!important; }
+    #root > div > header h1 ~ span { display:none!important; }
+    #root > div > header p { max-width:26ch; margin-top:7px!important; color:#a5bac8!important; font-size:11px!important; line-height:1.55!important; }
+    #root > div > header > div:first-child > div:last-child { display:flex!important; flex-direction:column!important; align-items:stretch!important; justify-content:flex-start!important; gap:9px!important; margin:0!important; }
+    #root > div > header > div:first-child > div:last-child > div { justify-content:flex-start; flex-wrap:wrap; width:100%; padding:10px 11px!important; border-radius:11px!important; background:rgba(5,18,29,.38)!important; border-color:rgba(159,192,208,.2)!important; color:#c6d5de!important; box-shadow:none!important; font-size:10px!important; }
+    #root > div > header > div:first-child > div:last-child > button { width:100%; min-height:42px; justify-content:center; border-radius:10px!important; }
+    #root > div > header > div:first-child > div:last-child > button:last-child { box-shadow:0 8px 22px rgba(4,154,176,.2)!important; }
+    #root > div > header button { cursor:pointer; transition:transform .18s ease,background .18s ease,border-color .18s ease; }
+    #root > div > header button:hover { transform:translateY(-1px); }
+    #root > div > header > div:nth-child(2) { display:flex!important; flex-direction:column!important; align-items:stretch!important; gap:5px!important; width:100%; max-width:none!important; margin:25px 0 0!important; padding:18px 0 0!important; border-top:1px solid rgba(160,190,207,.18)!important; border-bottom:0!important; overflow:visible; }
+    #root > div > header > div:nth-child(2)::before { content:'WORKSPACE'; display:block; padding:0 10px 8px; color:#7693a5; font:700 9px/1.2 'JetBrains Mono',monospace; letter-spacing:.17em; }
+    #root > div > header > div:nth-child(2) button { display:flex; align-items:center; flex:0 0 auto; min-height:44px; width:100%; padding:9px 11px!important; border:1px solid transparent!important; border-radius:10px!important; color:#b6c7d2!important; font-size:11px!important; text-align:left; white-space:normal; }
+    #root > div > header > div:nth-child(2) button:hover { background:rgba(231,246,251,.07)!important; color:#f5fbfd!important; }
+    #root > div > header > div:nth-child(2) button[class*="text-cyan-400"] { color:#8ce7e7!important; background:rgba(32,168,178,.14)!important; border-color:rgba(87,214,215,.2)!important; box-shadow:none!important; }
+    #root > div > main { width:calc(100% - 264px)!important; max-width:none!important; margin:0 0 0 264px!important; padding:34px clamp(22px,3vw,48px) 42px!important; color:var(--ink); }
+    #root > div > main .dashboard-intro { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; padding:0 2px 2px; }
+    #root > div > main .dashboard-intro > div:first-child { min-width:0; }
+    #root > div > main .dashboard-kicker { color:#0b8995; font-size:10px; letter-spacing:.17em; }
+    #root > div > main .dashboard-title { color:#173548; font-size:clamp(27px,3vw,36px); }
+    #root > div > main .dashboard-subtitle { color:#647c8d; font-size:13px; }
+    #root > div > main .dashboard-updated { display:flex; flex:0 0 auto; flex-direction:column; align-items:flex-end; gap:5px; color:#718898; font-size:11px; line-height:1.4; text-align:right; }
+    #root > div > main .dashboard-updated strong { color:#27475b; }
+    #root > div > main .provider-setup { display:grid; grid-template-columns:minmax(210px,.9fr) minmax(280px,1.1fr) auto; align-items:center; gap:18px; padding:16px 18px; border:1px solid #dbe7eb; border-radius:15px; background:linear-gradient(105deg,#f2fbfb,#ffffff 70%); box-shadow:0 8px 24px rgba(29,64,79,.045); }
+    #root > div > main .provider-setup-title { color:#22475a; }
+    #root > div > main .provider-setup-copy { color:#627b8b; }
+    #root > div > main .provider-checks { display:flex; flex-wrap:wrap; gap:8px; }
+    #root > div > main .provider-check { display:inline-flex; align-items:center; gap:7px; padding:8px 10px; border:1px solid #e0e9ed; border-radius:10px; background:#f8fbfc; color:#496477; font-size:11px; }
+    #root > div > main .provider-check b { color:#ad7213; }
+    #root > div > main .provider-setup-title { margin:0; font-size:13px; font-weight:750; }
+    #root > div > main .provider-setup-copy { margin:5px 0 0; font-size:11px; line-height:1.55; }
+    #root > div > main .provider-setup a { display:inline-flex; align-items:center; justify-content:center; min-height:36px; padding:0 13px; border:1px solid #c8e5e7; border-radius:10px; background:#eaf7f7; color:#087781; font-size:11px; font-weight:700; text-decoration:none; white-space:nowrap; }
+    #root > div > main .provider-setup a:hover { background:#d9f0f0; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 { gap:15px!important; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div { min-width:0; padding:18px!important; background:#fff!important; border:1px solid #dce7ec!important; border-radius:15px!important; box-shadow:0 5px 18px rgba(24,54,70,.045)!important; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div:hover { border-color:#a8d4d8!important; box-shadow:0 10px 25px rgba(24,92,106,.08)!important; transform:translateY(-2px); }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div > div:nth-child(2) > span:first-child { color:#17364a!important; letter-spacing:-.045em; }
+    #root > div > main .backdrop-blur-xl.bg-slate-900\/70 { background:#fff!important; border:1px solid #dce7ec!important; box-shadow:0 8px 25px rgba(24,54,70,.05)!important; backdrop-filter:none!important; }
+    #root > div > main .rounded-3xl { border-radius:16px!important; }
+    #root > div > main .bg-slate-950\/80,#root > div > main .bg-slate-950\/70,#root > div > main .bg-slate-950 { background:#f3f7f9!important; }
+    #root > div > main .bg-slate-900\/80,#root > div > main .bg-slate-900\/70,#root > div > main .bg-slate-900 { background:#f5f8fa!important; }
+    #root > div > main [class*="bg-cyan-950"],#root > div > main [class*="bg-sky-950"],#root > div > main [class*="bg-blue-950"] { background:#e8f4f7!important; }
+    #root > div > main [class*="bg-rose-950"],#root > div > main [class*="bg-red-950"] { background:#fff0f1!important; }
+    #root > div > main [class*="bg-amber-950"],#root > div > main [class*="bg-yellow-950"] { background:#fff6e7!important; }
+    #root > div > main [class*="bg-emerald-950"] { background:#e9f7f1!important; }
+    #root > div > main [class*="border-slate-800"],#root > div > main [class*="border-slate-700"] { border-color:#dce6eb!important; }
+    #root > div > main .text-white { color:#17364a!important; }
+    #root > div > main .text-slate-100,#root > div > main .text-slate-200,#root > div > main .text-slate-300 { color:#405b6d!important; }
+    #root > div > main .text-slate-400 { color:#60798a!important; }
+    #root > div > main .text-slate-500 { color:#718797!important; }
+    #root > div > main .text-slate-600 { color:#8295a2!important; }
+    #root > div > main h2 { color:#1b3a4e; letter-spacing:-.025em; }
+    #root > div > main button { cursor:pointer; }
+    #root > div > main button:hover { filter:brightness(1.035); }
+    #root > div > main input:not([type="range"]),#root > div > main select,#root > div > main textarea { min-height:40px; color:#203b4f!important; border-color:#d4e0e6!important; border-radius:9px!important; background:#fff!important; color-scheme:light; }
+    #root > div > main input:not([type="range"]):focus,#root > div > main select:focus,#root > div > main textarea:focus { border-color:#38aab4!important; box-shadow:0 0 0 3px rgba(56,170,180,.13); outline:none; }
+    #root > div > main input[type="range"] { appearance:none; width:100%; height:7px!important; min-height:7px!important; padding:0; border:0!important; border-radius:999px!important; background:#dce7ec!important; color-scheme:light; }
+    #root > div > main input[type="range"]::-webkit-slider-thumb { appearance:none; width:17px; height:17px; border:3px solid #fff; border-radius:50%; background:#08a9b8; box-shadow:0 1px 5px rgba(22,55,72,.25); cursor:grab; }
+    #root > div > main input.accent-rose-500[type="range"]::-webkit-slider-thumb { background:#e64b68; }
+    #root > div > main input[type="range"]::-moz-range-thumb { width:12px; height:12px; border:3px solid #fff; border-radius:50%; background:#08a9b8; box-shadow:0 1px 5px rgba(22,55,72,.25); cursor:grab; }
+    #root > div > main input.accent-rose-500[type="range"]::-moz-range-thumb { background:#e64b68; }
+    #root > div > main .bg-slate-800\/80,#root > div > main .bg-slate-800\/90,#root > div > main .bg-slate-800 { background:#e9eff3!important; }
+    #root > div > main [class*="bg-slate-800"] { background:#e9eff3!important; }
+    #root > div > main [class*="bg-slate-950"] { background:#f3f7f9!important; }
+    #root > div > main [class*="bg-slate-950"] { background:#f3f7f9!important; }
+    #root > div > main .text-cyan-300,#root > div > main .text-cyan-400 { color:#087f8b!important; }
+    #root > div > main .text-emerald-400 { color:#07805f!important; }
+    #root > div > main .text-rose-400 { color:#d5445d!important; }
+    #root > div > main .text-amber-300,#root > div > main .text-amber-400 { color:#a96908!important; }
+    #root > div > main .text-rose-200,#root > div > main .text-red-200 { color:#a8374a!important; }
+    #root > div > main .text-amber-200,#root > div > main .text-yellow-200 { color:#90600d!important; }
+    #root > div > main .text-indigo-200,#root > div > main .text-blue-200 { color:#3f55a1!important; }
+    #root > div > main .text-emerald-200 { color:#137450!important; }
+    #root > div > main .text-emerald-300 { color:#137450!important; }
+    #root > div > main .text-rose-300 { color:#bd4056!important; }
+    #root > div > main .text-yellow-300 { color:#8b6808!important; }
+    #root > div > main .text-blue-300,#root > div > main .text-indigo-300 { color:#39599e!important; }
+    #root > div > main .text-blue-400 { color:#3971a9!important; }
+    #root > div > main button[class*="bg-rose-"],#root > div > main button[class*="bg-red-"],#root > div > main button[class*="bg-amber-"],#root > div > main button[class*="bg-cyan-"],#root > div > main button[class*="bg-sky-"],#root > div > main button[class*="bg-emerald-"],#root > div > main button[class*="bg-gradient-to-r"] { color:#fff!important; }
+    #map { width:100%; min-height:480px; height:100%; border:1px solid #d5e0e6; border-radius:12px; z-index:10; box-shadow:inset 0 0 0 1px rgba(124,159,178,.18); }
+    .leaflet-container { background:#0b1620!important; font-family:Inter,system-ui,sans-serif!important; }
+    .leaflet-popup-content-wrapper,.leaflet-popup-tip { background:#fff!important; color:#17364a!important; border:1px solid #d6e2e8!important; box-shadow:0 12px 30px rgba(14,39,55,.18)!important; }
+    .leaflet-control-zoom a { background:#fff!important; color:#17364a!important; border-color:#d2dfe5!important; }
+    .leaflet-control-attribution { background:rgba(255,255,255,.88)!important; color:#516a7c!important; }
+    #root > div > footer { margin-left:264px; border-color:#dce6eb!important; background:#fff!important; color:#738797!important; line-height:1.6; }
+    ::-webkit-scrollbar { width:8px;height:8px; } ::-webkit-scrollbar-track { background:#edf2f5; } ::-webkit-scrollbar-thumb { background:#c5d2da;border-radius:99px; }
+    #root > div > header::-webkit-scrollbar-track { background:#102638; } #root > div > header::-webkit-scrollbar-thumb { background:#355265; }
+    :focus-visible { outline:2px solid #36aeb7!important; outline-offset:3px; }
+    @keyframes pulse-ring { 0% { transform:scale(.94); opacity:.88; } 55% { transform:scale(1.2); opacity:.22; } 100% { transform:scale(.94); opacity:.88; } }
+    .pulse-danger,.pulse-user { animation:pulse-ring 1.8s infinite ease-in-out; }
+    @media(max-width:1050px) {
+        #root > div { display:flex; flex-direction:column; }
+        #root > div > header { position:relative!important; inset:auto; width:100%; height:auto; max-height:none; overflow:visible; padding:16px 20px 0!important; border-right:0!important; border-bottom:1px solid #dce6eb!important; }
+        #root > div > header > div:first-child { flex-direction:row!important; align-items:center!important; gap:16px!important; }
+        #root > div > header > div:first-child > div:first-child { flex:1 1 350px; }
+        #root > div > header > div:first-child > div:last-child { flex:1 1 320px; flex-direction:row!important; justify-content:flex-end!important; flex-wrap:wrap; }
+        #root > div > header > div:first-child > div:last-child > div { width:auto; }
+        #root > div > header > div:first-child > div:last-child > button { width:auto; }
+        #root > div > header > div:nth-child(2) { flex-direction:row!important; margin-top:12px!important; padding-top:10px!important; overflow-x:auto; }
+        #root > div > header > div:nth-child(2)::before { display:none; }
+        #root > div > header > div:nth-child(2) button { width:auto; white-space:nowrap; }
+        #root > div > main { width:100%!important; margin:0!important; padding:24px 22px 32px!important; }
+        #root > div > footer { margin-left:0; }
+    }
+    @media(max-width:680px) {
+        #root > div > header { padding:14px 14px 0!important; }
+        #root > div > header > div:first-child { align-items:flex-start!important; flex-direction:column!important; }
+        #root > div > header > div:first-child > div:last-child { justify-content:flex-start!important; width:100%; }
+        #root > div > header > div:first-child > div:last-child > div { flex:1 1 100%; }
+        #root > div > header > div:first-child > div:last-child > button { flex:1; }
+        #root > div > header > div:nth-child(2) { margin-top:8px!important; }
+        #root > div > main { padding:20px 14px 26px!important; }
+        #root > div > main .dashboard-intro { align-items:flex-start; flex-direction:column; gap:10px; }
+        #root > div > main .dashboard-updated { align-items:flex-start; text-align:left; }
+        #root > div > main .provider-setup { grid-template-columns:1fr; gap:12px; padding:14px; }
+        #root > div > main .provider-checks,#root > div > main .provider-setup a { grid-column:auto; grid-row:auto; }
+        #root > div > main .provider-setup a { justify-self:start; }
+        #map { min-height:390px; }
+    }
+    /* Premium hydrology operations theme */
+    :root { color-scheme:dark; --canvas:#07121d; --paper:#101f2d; --ink:#edf5f8; --muted:#9cb0be; --line:#233b4d; }
+    body { color:#edf5f8; background:radial-gradient(ellipse at 75% -10%,rgba(15,105,124,.17),transparent 38%),radial-gradient(ellipse at 0% 90%,rgba(8,77,90,.13),transparent 32%),#07121d; }
+    #root > div { background:transparent; }
+    #root > div > header { background:linear-gradient(180deg,#0c2030 0%,#0a1a28 100%)!important; border-right-color:#1e394b!important; box-shadow:10px 0 34px rgba(0,0,0,.22)!important; }
+    #root > div > header > div:first-child > div:first-child > div:last-child { padding-top:2px; }
+    #root > div > header > div:first-child > div:last-child > div { background:rgba(5,16,26,.68)!important; border-color:#294456!important; }
+    #root > div > header > div:nth-child(2) { border-top-color:#294354!important; }
+    #root > div > header > div:nth-child(2) button[class*="text-cyan-400"] { color:#67e2e4!important; background:linear-gradient(100deg,rgba(14,123,136,.3),rgba(9,57,72,.45))!important; border-color:rgba(68,199,204,.3)!important; box-shadow:inset 0 1px rgba(255,255,255,.04)!important; }
+    #root > div > main { color:#edf5f8; }
+    #root > div > main .dashboard-kicker { color:#53d2d7; }
+    #root > div > main .dashboard-title { color:#f0f7fa; font-size:clamp(29px,3vw,39px); text-shadow:0 4px 22px rgba(0,0,0,.2); }
+    #root > div > main .dashboard-subtitle { color:#9eb2c0; }
+    #root > div > main .dashboard-updated { color:#8ea5b4; }
+    #root > div > main .dashboard-updated strong { color:#d6e6ed; }
+    #root > div > main .provider-setup { border-color:rgba(194,144,58,.33); background:linear-gradient(112deg,rgba(77,54,19,.42),rgba(16,34,47,.94) 50%,rgba(12,28,40,.97)); box-shadow:0 12px 34px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.035); }
+    #root > div > main .provider-setup-title { color:#ffe0a0; }
+    #root > div > main .provider-setup-copy { color:#aebdca; }
+    #root > div > main .provider-check { background:rgba(5,18,28,.7); border-color:#2c4353; color:#c0ced7; }
+    #root > div > main .provider-check b { color:#ffd078; }
+    #root > div > main .provider-setup a { border-color:rgba(67,191,199,.38); background:rgba(10,111,124,.22); color:#85e2e3; }
+    #root > div > main .provider-setup a:hover { background:rgba(14,145,156,.35); }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div { position:relative; overflow:hidden; background:linear-gradient(145deg,#122636 0%,#0d1c29 100%)!important; border-color:#244052!important; box-shadow:0 12px 30px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.035)!important; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div::before { position:absolute; top:0; left:18px; right:18px; height:2px; border-radius:0 0 4px 4px; background:linear-gradient(90deg,rgba(57,200,210,.8),rgba(57,200,210,0)); content:""; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div:hover { border-color:#347186!important; box-shadow:0 16px 34px rgba(0,0,0,.24),0 0 25px rgba(22,165,179,.07)!important; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div > div:nth-child(2) > span:first-child { color:#f1f7fa!important; }
+    #root > div > main .backdrop-blur-xl.bg-slate-900\/70 { background:linear-gradient(145deg,rgba(17,34,48,.98),rgba(11,25,37,.98))!important; border-color:#20394b!important; box-shadow:0 16px 42px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.035)!important; }
+    #root > div > main .bg-slate-950\/80,#root > div > main .bg-slate-950\/70,#root > div > main .bg-slate-950 { background:#091722!important; }
+    #root > div > main .bg-slate-900\/80,#root > div > main .bg-slate-900\/70,#root > div > main .bg-slate-900 { background:#112433!important; }
+    #root > div > main [class*="bg-slate-950"] { background:#091722!important; }
+    #root > div > main [class*="bg-slate-900"] { background:#112433!important; }
+    #root > div > main [class*="bg-slate-800"] { background:#1a3040!important; }
+    #root > div > main [class*="bg-cyan-950"],#root > div > main [class*="bg-sky-950"],#root > div > main [class*="bg-blue-950"] { background:rgba(8,96,115,.24)!important; }
+    #root > div > main [class*="bg-rose-950"],#root > div > main [class*="bg-red-950"] { background:rgba(130,35,55,.28)!important; }
+    #root > div > main [class*="bg-amber-950"],#root > div > main [class*="bg-yellow-950"] { background:rgba(126,78,13,.25)!important; }
+    #root > div > main [class*="bg-emerald-950"] { background:rgba(12,104,78,.24)!important; }
+    #root > div > main [class*="border-slate-800"],#root > div > main [class*="border-slate-700"] { border-color:#294354!important; }
+    #root > div > main .text-white { color:#f2f7fa!important; }
+    #root > div > main .text-slate-100,#root > div > main .text-slate-200 { color:#d7e3e9!important; }
+    #root > div > main .text-slate-300 { color:#bccbd4!important; }
+    #root > div > main .text-slate-400 { color:#9aafbd!important; }
+    #root > div > main .text-slate-500 { color:#8298a7!important; }
+    #root > div > main .text-slate-600 { color:#6e8493!important; }
+    #root > div > main .text-cyan-300 { color:#73dce0!important; }
+    #root > div > main .text-cyan-400 { color:#43c9d1!important; }
+    #root > div > main .text-blue-300,#root > div > main .text-blue-400 { color:#8bc5ff!important; }
+    #root > div > main .text-indigo-200,#root > div > main .text-indigo-300 { color:#b8b8ff!important; }
+    #root > div > main .text-rose-200,#root > div > main .text-rose-300,#root > div > main .text-rose-400 { color:#ff8da0!important; }
+    #root > div > main .text-red-200 { color:#ff9eaa!important; }
+    #root > div > main .text-amber-200,#root > div > main .text-amber-300,#root > div > main .text-amber-400 { color:#ffd078!important; }
+    #root > div > main .text-yellow-200,#root > div > main .text-yellow-300 { color:#f5d96c!important; }
+    #root > div > main .text-emerald-200,#root > div > main .text-emerald-300,#root > div > main .text-emerald-400 { color:#54d4a5!important; }
+    #root > div > main h2 { color:#f0f6f9; }
+    #root > div > main input:not([type="range"]),#root > div > main select,#root > div > main textarea { color:#e1edf2!important; border-color:#2a4355!important; background:#091722!important; color-scheme:dark; }
+    #root > div > main input[type="range"] { background:#263d4d!important; }
+    #root > div > footer { border-color:#1e3546!important; background:#0b1b28!important; color:#8197a6!important; }
+    ::-webkit-scrollbar-track { background:#0a1823; } ::-webkit-scrollbar-thumb { background:#294253; }
+    @media(prefers-reduced-motion:no-preference) {
+        #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div { animation:card-enter .42s both; }
+        #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div:nth-child(2) { animation-delay:.05s; }
+        #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div:nth-child(3) { animation-delay:.1s; }
+        #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div:nth-child(4) { animation-delay:.15s; }
+    }
+    @keyframes card-enter { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Readability pass: keep operational labels legible and prevent clipped copy. */
+    body { font-size:15px; line-height:1.55; }
+    #root > div > header { padding:28px 18px 24px!important; }
+    #root > div > header p { font-size:12px!important; line-height:1.6!important; }
+    #root > div > header > div:first-child > div:last-child > div { font-size:11px!important; line-height:1.5!important; }
+    #root > div > header > div:nth-child(2) button { min-height:48px; font-size:12px!important; line-height:1.45!important; }
+    #root > div > main { padding-top:40px!important; }
+    #root > div > main .dashboard-kicker { font-size:11px; }
+    #root > div > main .dashboard-title { line-height:1.16; }
+    #root > div > main .dashboard-subtitle { max-width:72ch; font-size:15px; line-height:1.55; }
+    #root > div > main .dashboard-updated { font-size:12px; line-height:1.5; }
+    #root > div > main .provider-setup { grid-template-columns:auto minmax(0,1fr); min-height:0; gap:18px; padding:12px 16px; }
+    #root > div > main .provider-setup-title { margin:0; font-size:14px; line-height:1.4; white-space:nowrap; }
+    #root > div > main .provider-checks { justify-content:flex-end; }
+    #root > div > main .provider-setup-copy { font-size:13px; line-height:1.55; }
+    #root > div > main .provider-check { min-height:38px; font-size:12px; line-height:1.35; }
+    #root > div > main .provider-setup a { min-height:40px; font-size:12px; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div > div:first-child { font-size:12px!important; line-height:1.4!important; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div > div:nth-child(2) > span:first-child { font-size:34px!important; line-height:1.1!important; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div > div:nth-child(2) > span:last-child { font-size:13px!important; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div > div:last-child { font-size:12px!important; line-height:1.45!important; }
+    #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 button,
+    #root > div > main .backdrop-blur-xl button { min-height:38px; line-height:1.4!important; }
+    #root > div > main .backdrop-blur-xl h2 { font-size:17px!important; line-height:1.3!important; }
+    #root > div > main .backdrop-blur-xl p { line-height:1.55; }
+    #root > div > main .text-xs { font-size:12px!important; line-height:1.45!important; }
+    #root > div > main [class*="text-[10px]"] { font-size:11px!important; line-height:1.4!important; }
+    #root > div > main [class*="text-[9px]"] { font-size:10px!important; line-height:1.4!important; }
+    #root > div > main button { white-space:normal; }
+    #root > div > main .dashboard-intro,
+    #root > div > main .provider-setup,
+    #root > div > main .grid,
+    #root > div > main .backdrop-blur-xl { min-width:0; }
+    #root > div > footer { font-size:12px!important; }
+    @media(max-width:1050px) {
+        #root > div > main { padding-top:28px!important; }
+        #root > div > header > div:nth-child(2) button { white-space:nowrap; }
+    }
+    @media(max-width:680px) {
+        #root > div > main .provider-setup { grid-template-columns:1fr; gap:8px; }
+        #root > div > main .provider-checks { justify-content:flex-start; }
+        #root > div > main .dashboard-subtitle { font-size:14px; }
+        #root > div > main .provider-checks { align-items:stretch; }
+        #root > div > main .provider-check { flex:1 1 100%; }
+        #root > div > main .grid.grid-cols-2.lg\:grid-cols-4 > div > div:nth-child(2) > span:first-child { font-size:30px!important; }
+    }
+</style>
+
+
+</head>
+<body class="text-slate-100 min-h-screen antialiased selection:bg-cyan-500 selection:text-white font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // ============================================================================
+        // CIVIL HYDROLOGICAL FORMULAS & CONSTANTS (IS 7323 & CWC Guidelines)
+        // ============================================================================
+        function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth radius in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return parseFloat((R * c).toFixed(2));
+        }
+
+        function calculateWaveArrival(distanceKm, dischargeCusecs) {
+            if (dischargeCusecs <= 500) {
+                return { arrivalMinutes: null, speedKmh: 0, statusText: "Spillway Gates Closed" };
+            }
+            let speedKmh = 7.5;
+            if (dischargeCusecs > 20000) speedKmh = 9.0;
+            if (dischargeCusecs > 50000) speedKmh = 11.5;
+            if (dischargeCusecs > 80000) speedKmh = 14.0;
+
+            const arrivalMinutes = Math.round((distanceKm / speedKmh) * 60);
+            let statusText = "";
+            if (arrivalMinutes < 30) {
+                statusText = `CRITICAL: Reaching plot in ${arrivalMinutes} mins!`;
+            } else if (arrivalMinutes < 60) {
+                statusText = `HIGH ALERT: Reaching plot in ${arrivalMinutes} mins.`;
+            } else {
+                const hrs = (arrivalMinutes / 60).toFixed(1);
+                statusText = `ADVISORY: Reaching plot in approx ${hrs} hours.`;
+            }
+
+            return { arrivalMinutes, speedKmh, statusText };
+        }
+
+        function evaluateReservoirStatus(dam) {
+            const { currentTmc, maxCapacityTmc, inflowCusecs, outflowCusecs, season } = dam;
+            const fillPercentage = parseFloat(((currentTmc / maxCapacityTmc) * 100).toFixed(1));
+
+            let alertLevel = "GREEN";
+            let alertTitle = "NORMAL SAFE STAGE";
+            let summaryMessage = "Reservoir storage and spillway discharge are within safe operating limits.";
+            let gateStatus = "Spillway Gates Closed / River Base Flow Only";
+
+            if (season === "monsoon") {
+                if (fillPercentage >= 95 || (fillPercentage >= 88 && inflowCusecs > 50000) || outflowCusecs >= 50000) {
+                    alertLevel = "RED";
+                    alertTitle = "EMERGENCY: RED FLOOD ALERT";
+                    summaryMessage = `Peak Monsoon Crest! Storage at ${fillPercentage}% (${currentTmc} TMC). High spillway release (${outflowCusecs.toLocaleString()} cusecs). Floodplain evacuation mandatory!`;
+                    gateStatus = "Crest Radial Gates Fully Opened (High Discharge)";
+                } else if (fillPercentage >= 85 || inflowCusecs > 35000 || outflowCusecs >= 25000) {
+                    alertLevel = "ORANGE";
+                    alertTitle = "WARNING: ORANGE ALERT";
+                    summaryMessage = `Storage at ${fillPercentage}%. High inflow (${inflowCusecs.toLocaleString()} cusecs). Spillway discharge active. Move livestock & pump sets.`;
+                    gateStatus = "Spillway Radial Gates Partially Opened";
+                } else if (fillPercentage >= 75 || inflowCusecs > 20000) {
+                    alertLevel = "YELLOW";
+                    alertTitle = "ADVISORY: YELLOW MONITORING";
+                    summaryMessage = `Storage at ${fillPercentage}%. Inflow steady. Early warning advisory to low-lying farmers.`;
+                    gateStatus = "Canal Sluices Active / Spillway Standby";
+                } else {
+                    alertLevel = "GREEN";
+                    alertTitle = "NORMAL: GREEN STAGE";
+                    summaryMessage = `Storage at ${fillPercentage}%. Reservoir safely absorbing catchment inflow.`;
+                    gateStatus = "Spillway Closed / River Base Flow Only";
+                }
+            } else if (season === "winter") {
+                if (fillPercentage >= 98 || outflowCusecs >= 40000) {
+                    alertLevel = "RED";
+                    alertTitle = "EMERGENCY: OVERFLOW RED ALERT";
+                    summaryMessage = `Winter conservation capacity exceeded (${fillPercentage}%). Emergency spillway bypass active.`;
+                    gateStatus = "Spillway Gates Open";
+                } else if (fillPercentage >= 92 || outflowCusecs >= 20000) {
+                    alertLevel = "ORANGE";
+                    alertTitle = "CAUTION: HIGH WINTER STORAGE";
+                    summaryMessage = `Dam held at ${fillPercentage}% for Rabi irrigation supply. Downstream canals running at full capacity.`;
+                    gateStatus = "Irrigation Canals Full Supply Depth";
+                } else {
+                    alertLevel = "GREEN";
+                    alertTitle = "OPTIMAL: WINTER CONSERVATION";
+                    summaryMessage = `Storage at ${fillPercentage}%. Water conserved for agricultural feeding.`;
+                    gateStatus = "Controlled Discharge";
+                }
+            } else { // Summer
+                if (outflowCusecs > 15000) {
+                    alertLevel = "ORANGE";
+                    alertTitle = "CANAL SURGE ALERT: SUMMER";
+                    summaryMessage = `Sudden heavy release into irrigation canals. Farmers along canals advised caution.`;
+                    gateStatus = "Emergency Canal Flushing";
+                } else if (fillPercentage < 20) {
+                    alertLevel = "YELLOW";
+                    alertTitle = "DROUGHT ADVISORY: LOW STORAGE";
+                    summaryMessage = `Reservoir at ${fillPercentage}% (Conservation / Dead storage pool). Water strictly rationed.`;
+                    gateStatus = "Drinking Water Sluice Only";
+                } else {
+                    alertLevel = "GREEN";
+                    alertTitle = "NORMAL: SUMMER STAGE";
+                    summaryMessage = `Storage at ${fillPercentage}%. Rotational irrigation active.`;
+                    gateStatus = "Rotational Canal Release";
+                }
+            }
+
+            return { fillPercentage, alertLevel, alertTitle, summaryMessage, gateStatus };
+        }
+
+        function evaluateFarmerRisk(farmer, damStatus, outflowCusecs) {
+            const { distanceKm } = farmer;
+            const river_dist = farmer.distanceFromRiverMeters || 300;
+            const wave = calculateWaveArrival(distanceKm, outflowCusecs);
+
+            let riskTier = "SAFE";
+            let badgeColor = "green";
+            let action = "Conditions normal. Regular farming activities can continue.";
+
+            if (damStatus.alertLevel === "RED") {
+                if (distanceKm <= 2.0 || river_dist <= 250) {
+                    riskTier = "CRITICAL";
+                    badgeColor = "red";
+                    action = "🚨 IMMEDIATE EVACUATION: Flash flood danger! Unchain cattle, disconnect electric pump motors, move to high ground immediately!";
+                } else if (distanceKm <= 5.0 || river_dist <= 600) {
+                    riskTier = "WARNING";
+                    badgeColor = "orange";
+                    action = "⚠️ PREPARE TO EVACUATE: Move cattle, pump motors, and machinery to higher elevation. Keep torches and battery sets ready.";
+                } else {
+                    riskTier = "ADVISORY";
+                    badgeColor = "yellow";
+                    action = "📢 FLOOD ADVISORY: Stay clear of canal banks and river crossings.";
+                }
+            } else if (damStatus.alertLevel === "ORANGE") {
+                if (distanceKm <= 2.0) {
+                    riskTier = "WARNING";
+                    badgeColor = "orange";
+                    action = "⚠️ CAUTION: Spillway active. Stay clear of riverbank fields.";
+                } else if (distanceKm <= 5.0) {
+                    riskTier = "ADVISORY";
+                    badgeColor = "yellow";
+                    action = "📢 ADVISORY: River channel rising. Secure irrigation pipes.";
+                } else {
+                    riskTier = "SAFE";
+                    badgeColor = "green";
+                    action = "Normal vigilance. Follow local village panchayat announcements.";
+                }
+            } else if (damStatus.alertLevel === "YELLOW") {
+                if (distanceKm <= 2.0) {
+                    riskTier = "ADVISORY";
+                    badgeColor = "yellow";
+                    action = "📢 EARLY NOTICE: Catchment heavy rain. Dam gates may open in 12-24h.";
+                } else {
+                    riskTier = "SAFE";
+                    badgeColor = "green";
+                    action = "Safe. Regular operations.";
+                }
+            } else {
+                riskTier = "SAFE";
+                badgeColor = "green";
+                action = "Green Safe Zone. Normal irrigation schedule active.";
+            }
+
+            return { riskTier, badgeColor, actionRecommendation: action, waveArrival: wave };
+        }
+
+        const INITIAL_DAM = {
+            id: "DAM-KRS-001",
+            name: "Krishnarajasagara (KRS) Dam",
+            river: "Cauvery River Basin",
+            district: "Mandya / Mysuru",
+            state: "Karnataka",
+            latitude: 12.2707,
+            longitude: 76.5742,
+            fullReservoirLevelMeters: 124.80,
+            maxWaterLevelMeters: 125.50,
+            deadStorageTmc: 4.38,
+            maxCapacityTmc: 49.45,
+            currentTmc: 46.80,
+            waterLevelMeters: 123.90,
+            inflowCusecs: 48000,
+            outflowCusecs: 38000,
+            season: "monsoon"
+        };
+
+        // ============================================================================
+        // MAIN APP COMPONENT
+        // ============================================================================
+        function App() {
+            // localhost may resolve to the separate Node demo listener on IPv6.
+            // Route local dashboard API calls directly to the Python alert server.
+            const apiFetch = (path, options = {}) => {
+                const token = sessionStorage.getItem('jalsuraksha-admin-token');
+                const headers = { ...(options.headers || {}) };
+                if (token) headers.Authorization = `Bearer ${token}`;
+                return fetch(`${window.location.hostname === "localhost" ? "http://127.0.0.1:5000" : ""}${path}`, { ...options, headers });
+            };
+            const [adminAuthenticated, setAdminAuthenticated] = useState(false);
+            const [authChecked, setAuthChecked] = useState(false);
+            const [adminUsername, setAdminUsername] = useState('admin');
+            const [adminPassword, setAdminPassword] = useState('');
+            const [adminLoginError, setAdminLoginError] = useState('');
+            const [adminLoginBusy, setAdminLoginBusy] = useState(false);
+            const [dam, setDam] = useState(INITIAL_DAM);
+            const [farmers, setFarmers] = useState([]);
+            const [activeTab, setActiveTab] = useState("dashboard");
+            const [alertLog, setAlertLog] = useState([]);
+            const [sirenPlaying, setSirenPlaying] = useState(false);
+            const [showRegisterModal, setShowRegisterModal] = useState(false);
+            const [isBroadcasting, setIsBroadcasting] = useState(false);
+            const [envStatus, setEnvStatus] = useState({ smtpConfigured: false, smsConfigured: false, smtpUser: "Loading..." });
+            const [lastModalAlert, setLastModalAlert] = useState(null);
+            const [searchFilter, setSearchFilter] = useState("");
+            
+            // Map Tile Themes
+            const [mapTheme, setMapTheme] = useState('dark'); // 'dark' | 'street' | 'satellite'
+
+            // Live GPS Current Location State
+            const [userLocation, setUserLocation] = useState(null);
+            const [gpsLoading, setGpsLoading] = useState(false);
+
+            // Registration form state
+            const [regForm, setRegForm] = useState({
+                name: "",
+                phone: "+91",
+                email: "",
+                surveyNumber: "",
+                village: "",
+                cropType: "Sugarcane",
+                landAreaAcres: 3.5,
+                latitude: 12.2680,
+                longitude: 76.5910,
+                distanceFromRiverMeters: 200,
+                notes: ""
+            });
+
+            const leafletMap = useRef(null);
+            const tileLayerRef = useRef(null);
+            const markersLayer = useRef(null);
+            const userMarkerLayer = useRef(null);
+            const sirenOscRef = useRef(null);
+
+            // Base Map Tile URLs
+            const TILE_PROVIDERS = {
+                dark: {
+                    // OpenStreetMap with dark CSS filter applied via Leaflet pane
+                    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    attrib: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    filter: 'brightness(0.55) invert(1) contrast(3) hue-rotate(200deg) saturate(0.25) brightness(0.7)'
+                },
+                street: {
+                    // OpenStreetMap Standard — FREE, no API key, universal coverage
+                    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    attrib: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    filter: 'none'
+                },
+                satellite: {
+                    // Esri World Imagery — FREE, no API key
+                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                    attrib: '&copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS',
+                    filter: 'none'
+                }
+            };
+
+            // Fetch live farmers & env status
+            const refreshData = () => {
+                apiFetch('/api/farmers')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.farmers && data.farmers.length > 0) {
+                            setFarmers(data.farmers);
+                        }
+                    })
+                    .catch(err => console.log('Backend sync error:', err));
+
+                apiFetch('/api/env-status')
+                    .then(r => r.json())
+                    .then(data => setEnvStatus(data))
+                    .catch(() => setEnvStatus({ smtpConfigured: false, smsConfigured: false, smtpUser: "API unavailable" }));
+            };
+
+            const handleAdminLogin = async (event) => {
+                event.preventDefault();
+                setAdminLoginBusy(true);
+                setAdminLoginError('');
+                try {
+                    const response = await apiFetch('/api/admin/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: adminUsername, password: adminPassword })
+                    });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.error || 'Sign-in failed.');
+                    sessionStorage.setItem('jalsuraksha-admin-token', data.token);
+                    setAdminPassword('');
+                    setAdminAuthenticated(true);
+                } catch (error) {
+                    setAdminLoginError(error.message || 'Could not connect to the admin API.');
+                } finally {
+                    setAdminLoginBusy(false);
+                }
+            };
+
+            const handleAdminLogout = () => {
+                apiFetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
+                sessionStorage.removeItem('jalsuraksha-admin-token');
+                setAdminAuthenticated(false);
+                setAuthChecked(true);
+            };
+
+            useEffect(() => {
+                const token = sessionStorage.getItem('jalsuraksha-admin-token');
+                if (!token) {
+                    setAuthChecked(true);
+                    return;
+                }
+                apiFetch('/api/admin/session')
+                    .then(response => { if (!response.ok) throw new Error('Session expired'); setAdminAuthenticated(true); })
+                    .catch(() => { sessionStorage.removeItem('jalsuraksha-admin-token'); setAdminAuthenticated(false); })
+                    .finally(() => setAuthChecked(true));
+            }, []);
+
+            useEffect(() => {
+                if (!adminAuthenticated) return;
+                refreshData();
+                const refreshTimer = setInterval(refreshData, 15000);
+                return () => clearInterval(refreshTimer);
+            }, [adminAuthenticated]);
+
+            // Handle tab changes & map resize
+            useEffect(() => {
+                if (activeTab === 'dashboard' && leafletMap.current) {
+                    setTimeout(() => {
+                        leafletMap.current.invalidateSize();
+                    }, 200);
+                }
+            }, [activeTab]);
+
+            // Switch Tile Themes
+            useEffect(() => {
+                if (leafletMap.current && tileLayerRef.current) {
+                    leafletMap.current.removeLayer(tileLayerRef.current);
+                    const provider = TILE_PROVIDERS[mapTheme] || TILE_PROVIDERS.dark;
+                    const newLayer = L.tileLayer(provider.url, { attribution: provider.attrib }).addTo(leafletMap.current);
+                    tileLayerRef.current = newLayer;
+                    // Apply CSS filter for dark mode
+                    setTimeout(() => {
+                        const tilePane = leafletMap.current.getPanes().tilePane;
+                        if (tilePane) tilePane.style.filter = provider.filter || 'none';
+                    }, 100);
+                }
+            }, [mapTheme]);
+
+            // Compute Hydrological Evaluation
+            const evaluation = useMemo(() => evaluateReservoirStatus(dam), [dam]);
+
+            // Enrich farmers with live distance & risk
+            const enrichedFarmers = useMemo(() => {
+                return farmers.map(f => {
+                    const dist = calculateHaversineDistance(dam.latitude, dam.longitude, f.latitude, f.longitude);
+                    const farmerWithDist = { ...f, distanceKm: dist };
+                    const risk = evaluateFarmerRisk(farmerWithDist, evaluation, dam.outflowCusecs);
+                    return { ...farmerWithDist, riskAssessment: risk };
+                });
+            }, [farmers, dam, evaluation]);
+
+            // Filtered farmers for table
+            const filteredFarmers = useMemo(() => {
+                if (!searchFilter.trim()) return enrichedFarmers;
+                const q = searchFilter.toLowerCase();
+                return enrichedFarmers.filter(f => 
+                    (f.name && f.name.toLowerCase().includes(q)) ||
+                    (f.surveyNumber && f.surveyNumber.toLowerCase().includes(q)) ||
+                    (f.village && f.village.toLowerCase().includes(q)) ||
+                    (f.phone && f.phone.includes(q))
+                );
+            }, [enrichedFarmers, searchFilter]);
+
+            // Siren Audio Synthesizer
+            const toggleSiren = () => {
+                if (sirenPlaying) {
+                    if (sirenOscRef.current) {
+                        sirenOscRef.current.stop();
+                        sirenOscRef.current.disconnect();
+                        sirenOscRef.current = null;
+                    }
+                    setSirenPlaying(false);
+                } else {
+                    try {
+                        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                        const ctx = new AudioCtx();
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = "sawtooth";
+                        
+                        const now = ctx.currentTime;
+                        osc.frequency.setValueAtTime(600, now);
+                        osc.frequency.linearRampToValueAtTime(950, now + 0.6);
+                        osc.frequency.linearRampToValueAtTime(600, now + 1.2);
+                        
+                        gain.gain.setValueAtTime(0.15, now);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start();
+                        sirenOscRef.current = osc;
+                        setSirenPlaying(true);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            };
+
+            // ========================================================================
+            // 🎯 LIVE GPS / CURRENT LOCATION ENGINE
+            // ========================================================================
+            const detectCurrentLocation = (target = 'map') => {
+                setGpsLoading(true);
+
+                if (!navigator.geolocation) {
+                    alert("Geolocation is not supported by your browser. Using simulated riverbank coordinates.");
+                    applySimulatedLocation(target);
+                    setGpsLoading(false);
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = parseFloat(pos.coords.latitude.toFixed(4));
+                        const lng = parseFloat(pos.coords.longitude.toFixed(4));
+                        applyLocationData(lat, lng, pos.coords.accuracy, target);
+                        setGpsLoading(false);
+                    },
+                    (err) => {
+                        console.warn("GPS error:", err);
+                        // Seamless fallback for indoor hackathons / no hardware GPS
+                        applySimulatedLocation(target);
+                        setGpsLoading(false);
+                    },
+                    { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+                );
+            };
+
+            const applySimulatedLocation = (target) => {
+                const simLat = 12.2680;
+                const simLng = 76.5910;
+                applyLocationData(simLat, simLng, 15, target, true);
+            };
+
+            window.testRiverbankGPS = () => applySimulatedLocation('map');
+
+            const applyLocationData = (lat, lng, accuracy, target, isSimulated = false) => {
+                const dist = calculateHaversineDistance(dam.latitude, dam.longitude, lat, lng);
+                const wave = calculateWaveArrival(dist, dam.outflowCusecs);
+                const risk = evaluateFarmerRisk({ distanceKm: dist, distanceFromRiverMeters: 200 }, evaluation, dam.outflowCusecs);
+
+                const locInfo = {
+                    lat,
+                    lng,
+                    accuracy: Math.round(accuracy || 20),
+                    distanceKm: dist,
+                    waveArrival: wave,
+                    riskTier: risk.riskTier,
+                    action: risk.actionRecommendation,
+                    isSimulated,
+                    timestamp: new Date().toLocaleTimeString()
+                };
+
+                setUserLocation(locInfo);
+
+                if (target === 'register') {
+                    setRegForm(prev => ({
+                        ...prev,
+                        latitude: lat,
+                        longitude: lng,
+                        village: prev.village || (isSimulated ? "Belagola Downstream" : "Live Device GPS")
+                    }));
+                }
+
+                // If on Map, animate to location and show custom user pulse marker
+                if (leafletMap.current) {
+                    if (userMarkerLayer.current) {
+                        userMarkerLayer.current.clearLayers();
+                    } else {
+                        userMarkerLayer.current = L.layerGroup().addTo(leafletMap.current);
+                    }
+
+                    const userIcon = L.divIcon({
+                        className: 'user-gps-marker',
+                        html: `
+                            <div class="relative flex items-center justify-center">
+                                <div class="absolute w-14 h-14 rounded-full bg-cyan-400/35 pulse-user"></div>
+                                <div class="relative w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 border-2 border-white shadow-2xl flex items-center justify-center text-sm font-black text-white ring-4 ring-cyan-500/30">
+                                    🎯
+                                </div>
+                            </div>
+                        `,
+                        iconSize: [36, 36],
+                        iconAnchor: [18, 18]
+                    });
+
+                    const etaText = wave.arrivalMinutes ? `${wave.arrivalMinutes} mins` : "Gates Closed";
+                    
+                    const popupContainer = document.createElement('div');
+                    popupContainer.className = 'text-slate-900 font-sans p-1 text-sm';
+                    popupContainer.innerHTML = `
+                        <div class="flex items-center space-x-1.5 font-black text-base text-cyan-700">
+                            <span>🎯</span>
+                            <span>${isSimulated ? "Simulated Downstream Plot (Belagola)" : "You Are Here (Live Device GPS)"}</span>
+                        </div>
+                        <div class="mt-2 text-xs border-t border-slate-200 pt-1.5 space-y-1">
+                            <div><b>GPS Coordinates:</b> <span class="font-mono text-slate-800">${lat}° N, ${lng}° E</span></div>
+                            <div><b>Distance from KRS Dam:</b> <span class="font-bold text-slate-900">${dist} km</span></div>
+                            <div><b>Flood Wave Arrival ETA:</b> <span class="font-bold text-red-600 font-mono">${etaText}</span></div>
+                            <div><b>Assessed Risk Tier:</b> <span class="font-bold uppercase ${risk.riskTier === 'CRITICAL' ? 'text-red-600 font-black' : 'text-amber-600'}">${risk.riskTier}</span></div>
+                        </div>
+                        <div class="mt-2 text-[11px] bg-slate-100 p-2 rounded-lg border border-slate-200 text-slate-700">
+                            ${risk.actionRecommendation}
+                        </div>
+                        ${dist > 25 ? `
+                            <div class="mt-2 pt-2 border-t border-slate-200">
+                                <div class="text-[10px] text-amber-700 font-medium">📍 Notice: Device is ${dist} km away (outside Cauvery basin).</div>
+                                <button onclick="window.testRiverbankGPS()" class="mt-1 w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 px-2 rounded text-xs transition">
+                                    Simulate at Belagola Riverbank (1.85 km) 🌊
+                                </button>
+                            </div>
+                        ` : ''}
+                    `;
+
+                    const testAlertBtn = document.createElement('button');
+                    testAlertBtn.className = 'mt-3 w-full text-center bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold py-2 px-3 rounded-lg text-xs shadow-lg flex items-center justify-center space-x-1.5 transition transform active:scale-95';
+                    testAlertBtn.innerHTML = '<span>⚡</span><span>Test 1-Click 3-Way Alert to My Device</span>';
+                    testAlertBtn.onclick = () => {
+                        const ownEmail = regForm.email.trim().toLowerCase();
+                        const ownPhone = regForm.phone.replace(/\D/g, '');
+                        const hasOwnPhone = ownPhone.length >= 10;
+                        const matches = enrichedFarmers.filter(f => {
+                            const emailMatches = ownEmail && String(f.email || '').trim().toLowerCase() === ownEmail;
+                            const savedPhone = String(f.phone || '').replace(/\D/g, '');
+                            const phoneMatches = hasOwnPhone && savedPhone.slice(-10) === ownPhone.slice(-10);
+                            return ownEmail && hasOwnPhone ? emailMatches && phoneMatches : emailMatches || phoneMatches;
+                        });
+                        if (matches.length !== 1) {
+                            alert('Register your own phone and email in Farmers & Land Survey Registry first. The test alert was not sent because a unique matching contact was not found.');
+                            return;
+                        }
+                        handleSingleFarmer3WayAlert(matches[0]);
+                    };
+                    popupContainer.appendChild(testAlertBtn);
+
+                    const uMarker = L.marker([lat, lng], { icon: userIcon })
+                        .bindPopup(popupContainer);
+                    
+                    userMarkerLayer.current.addLayer(uMarker);
+
+                    leafletMap.current.flyTo([lat, lng], dist > 25 ? 12 : 14, {
+                        animate: true,
+                        duration: 1.2
+                    });
+
+                    setTimeout(() => {
+                        uMarker.openPopup();
+                    }, 1300);
+                }
+            };
+
+            // Initialize Leaflet Map
+            useEffect(() => {
+                if (!leafletMap.current && document.getElementById('map')) {
+                    // Center firmly on KRS Dam with optimal zoom
+                    const map = L.map('map', {
+                        center: [dam.latitude, dam.longitude],
+                        zoom: 13,
+                        minZoom: 10,
+                        maxZoom: 18,
+                        zoomControl: false // custom position
+                    });
+
+                    // Add Zoom Control at bottom right
+                    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+                    // Initial Tile Layer
+                    const provider = TILE_PROVIDERS[mapTheme] || TILE_PROVIDERS.dark;
+                    const tileLayer = L.tileLayer(provider.url, { attribution: provider.attrib }).addTo(map);
+                    tileLayerRef.current = tileLayer;
+                    // Apply dark filter initially
+                    setTimeout(() => {
+                        const tilePane = map.getPanes().tilePane;
+                        if (tilePane) tilePane.style.filter = provider.filter || 'none';
+                    }, 200);
+
+                    // Add KRS Dam Marker with glowing wave icon
+                    const damIcon = L.divIcon({
+                        className: 'custom-dam-marker',
+                        html: `
+                            <div class="relative flex items-center justify-center">
+                                <div class="absolute w-14 h-14 rounded-full bg-cyan-500/25 pulse-user"></div>
+                                <div class="relative w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white shadow-2xl border-2 border-white flex items-center justify-center text-sm font-black ring-4 ring-cyan-500/30">
+                                    🌊
+                                </div>
+                            </div>
+                        `,
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 20]
+                    });
+
+                    L.marker([dam.latitude, dam.longitude], { icon: damIcon })
+                        .addTo(map)
+                        .bindPopup(`
+                            <div class="text-slate-900 font-sans p-1 text-sm">
+                                <div class="font-black text-base text-cyan-700">${dam.name}</div>
+                                <div class="text-xs text-slate-600">${dam.river} &bull; ${dam.district}</div>
+                                <div class="mt-2 text-xs border-t border-slate-200 pt-1 space-y-1">
+                                    <div><b>Full Reservoir Level:</b> ${dam.fullReservoirLevelMeters} m</div>
+                                    <div><b>Gross Storage Capacity:</b> ${dam.maxCapacityTmc} TMC</div>
+                                    <div><b>Current Telemetry:</b> <span class="text-cyan-700 font-bold">${dam.currentTmc} TMC (${evaluation.fillPercentage}%)</span></div>
+                                </div>
+                            </div>
+                        `);
+
+                    // 0-2km Red Critical Floodplain Buffer
+                    L.circle([dam.latitude, dam.longitude], {
+                        radius: 2000,
+                        color: '#ef4444',
+                        fillColor: '#ef4444',
+                        fillOpacity: 0.16,
+                        weight: 2,
+                        dashArray: '6, 6'
+                    }).addTo(map).bindPopup("<b>Zone 1 (0 - 2 km): Critical Floodplain</b><br>Mandatory Evacuation Zone");
+
+                    // 2-5km Orange Warning Buffer
+                    L.circle([dam.latitude, dam.longitude], {
+                        radius: 5000,
+                        color: '#f97316',
+                        fillColor: '#f97316',
+                        fillOpacity: 0.10,
+                        weight: 2,
+                        dashArray: '6, 6'
+                    }).addTo(map).bindPopup("<b>Zone 2 (2 - 5 km): Agricultural Buffer</b><br>Equipment & Livestock Relocation");
+
+                    // 5-10km Yellow Advisory Command Area
+                    L.circle([dam.latitude, dam.longitude], {
+                        radius: 10000,
+                        color: '#eab308',
+                        fillColor: '#eab308',
+                        fillOpacity: 0.04,
+                        weight: 1.5,
+                        dashArray: '8, 8'
+                    }).addTo(map).bindPopup("<b>Zone 3 (5 - 10 km): Canal Command Area</b>");
+
+                    markersLayer.current = L.layerGroup().addTo(map);
+                    leafletMap.current = map;
+
+                    // Force correct size + zoom after DOM settles (fixes blank map on first load)
+                    setTimeout(() => {
+                        map.invalidateSize();
+                        map.setView([dam.latitude, dam.longitude], 13);
+                    }, 300);
+
+                    // Click on map to pick coordinates
+                    map.on('click', (e) => {
+                        setRegForm(prev => ({
+                            ...prev,
+                            latitude: parseFloat(e.latlng.lat.toFixed(4)),
+                            longitude: parseFloat(e.latlng.lng.toFixed(4))
+                        }));
+                    });
+                }
+            }, []);
+
+            // Update Farmer Markers on Map (With Safe Bound Clamping!)
+            useEffect(() => {
+                if (leafletMap.current && markersLayer.current && enrichedFarmers.length > 0) {
+                    markersLayer.current.clearLayers();
+
+                    const validLayers = [];
+
+                    enrichedFarmers.forEach(f => {
+                        // Skip if coordinate is abnormal
+                        if (isNaN(f.latitude) || isNaN(f.longitude)) return;
+                        if (f.latitude < -90 || f.latitude > 90 || f.longitude < -180 || f.longitude > 180) return;
+
+                        const isVinay = f.name && f.name.toLowerCase().includes('vinay');
+                        let colorClass = isVinay ? "bg-cyan-500 border-yellow-300 ring-4 ring-yellow-400/40" : "bg-emerald-500 border-white";
+                        let pulseClass = isVinay ? "pulse-user" : "";
+
+                        if (f.riskAssessment.riskTier === "CRITICAL") {
+                            colorClass = "bg-rose-600 border-rose-200 ring-4 ring-rose-500/40";
+                            pulseClass = "pulse-danger";
+                        } else if (f.riskAssessment.riskTier === "WARNING") {
+                            colorClass = "bg-amber-500 border-amber-200";
+                        } else if (f.riskAssessment.riskTier === "ADVISORY") {
+                            colorClass = "bg-yellow-500 border-yellow-200";
+                        }
+
+                        const markerIcon = L.divIcon({
+                            className: 'farmer-marker',
+                            html: `
+                                <div class="relative flex items-center justify-center">
+                                    <div class="${colorClass} ${pulseClass} text-white rounded-2xl p-1 shadow-2xl border-2 flex items-center justify-center text-xs font-black w-8 h-8 transition-transform hover:scale-110">
+                                        🌾
+                                    </div>
+                                </div>
+                            `,
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 16]
+                        });
+
+                        const wave = f.riskAssessment.waveArrival;
+                        const eta = wave.arrivalMinutes ? `${wave.arrivalMinutes} mins` : "Closed";
+
+                        const popupContent = document.createElement('div');
+                        popupContent.className = 'text-slate-900 font-sans p-1 text-sm';
+                        popupContent.innerHTML = `
+                            <div class="font-black text-base text-slate-900 flex items-center justify-between">
+                                <span>${f.name}</span>
+                                ${isVinay ? '<span class="text-[10px] bg-yellow-100 text-yellow-800 border border-yellow-300 px-1.5 py-0.5 rounded font-bold">⭐ You</span>' : ''}
+                            </div>
+                            <div class="text-xs text-slate-500">Survey No: <b class="text-slate-800">${f.surveyNumber}</b> &bull; ${f.village}</div>
+                            <div class="mt-2 text-xs border-t border-slate-200 pt-1.5 space-y-1">
+                                <div><b>Phone:</b> ${f.phone} (SMS & WhatsApp)</div>
+                                <div><b>Email:</b> ${f.email}</div>
+                                <div><b>Distance from Dam:</b> <span class="font-bold text-slate-900">${f.distanceKm} km</span></div>
+                                <div><b>Flood Wave Arrival:</b> <span class="text-red-600 font-bold">${eta}</span></div>
+                                <div><b>Crop:</b> ${f.cropType} (${f.landAreaAcres} Acres)</div>
+                                <div><b>Risk Tier:</b> <span class="font-bold uppercase ${f.riskAssessment.riskTier === 'CRITICAL' ? 'text-red-600' : 'text-amber-600'}">${f.riskAssessment.riskTier}</span></div>
+                            </div>
+                        `;
+
+                        const btn3Way = document.createElement('button');
+                        btn3Way.className = 'mt-3 w-full text-center bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold py-2 px-3 rounded-lg text-xs shadow-lg flex items-center justify-center space-x-1.5 transition transform active:scale-95';
+                        btn3Way.innerHTML = '<span>⚡</span><span>1-Click 3-Way Alert (SMS+WA+Email)</span>';
+                        btn3Way.onclick = () => handleSingleFarmer3WayAlert(f);
+                        popupContent.appendChild(btn3Way);
+
+                        const marker = L.marker([f.latitude, f.longitude], { icon: markerIcon })
+                            .bindPopup(popupContent);
+                        
+                        markersLayer.current.addLayer(marker);
+
+                        // Only consider points within 30km of dam for bounding
+                        if (f.distanceKm <= 30) {
+                            validLayers.push(marker);
+                        }
+                    });
+
+                    // Safely fit bounds within local Cauvery downstream basin
+                    if (validLayers.length > 0) {
+                        try {
+                            const group = new L.featureGroup(validLayers);
+                            group.addLayer(L.marker([dam.latitude, dam.longitude]));
+                            leafletMap.current.fitBounds(group.getBounds().pad(0.12), {
+                                maxZoom: 14
+                            });
+                        } catch (e) {}
+                    }
+                }
+            }, [enrichedFarmers]);
+
+            // ========================================================================
+            // ⚡ 1-CLICK 3-WAY ALERT ENGINE (SMS + WHATSAPP + GMAIL SMTP)
+            // ========================================================================
+            const handleSingleFarmer3WayAlert = async (farmer) => {
+                const wave = farmer.riskAssessment.waveArrival;
+                const eta = wave.arrivalMinutes ? `~${wave.arrivalMinutes} mins` : "Gates Closed";
+                const phoneDigits = farmer.phone.replace(/[^0-9]/g, '');
+
+                // 1. Prepare WhatsApp Web URL & Open Tab
+                const waMsg = `🌊 *JAL-SURAKSHA FLOOD ALERT* - ${dam.name}\nNamaskara *${farmer.name}*,\n📍 *Survey Plot*: ${farmer.surveyNumber} (${farmer.village})\n⚠️ *Status*: ${evaluation.alertTitle}\n💧 *Storage*: ${dam.currentTmc} TMC (${evaluation.fillPercentage}% Capacity)\n🚪 *Spillway Outflow*: ${dam.outflowCusecs.toLocaleString()} cusecs\n⏱️ *Flood Wave Arrival*: ${eta}\n🚨 *Advisory*: ${farmer.riskAssessment.actionRecommendation}\nIssued by: Mandya / Mysuru Disaster Management Authority`;
+                const waUrl = `https://api.whatsapp.com/send?phone=${phoneDigits}&text=${encodeURIComponent(waMsg)}`;
+                window.open(waUrl, '_blank');
+
+                // 2. Prepare 160-char SMS text
+                const smsMsg = `ALERT! ${dam.name}: Outflow ${dam.outflowCusecs.toLocaleString()} cusecs. Flood wave arrives Survey ${farmer.surveyNumber} in ${eta}. Evacuate cattle & motors! -Govt`;
+                const smsUrl = `sms:${phoneDigits}?body=${encodeURIComponent(smsMsg)}`;
+
+                // 3. Trigger Backend Real SMTP Email & SMS Gateway
+                let serverResponse = null;
+                let requestError = null;
+                try {
+                    const res = await apiFetch('/api/alerts/send-farmer-3way', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            farmerId: farmer.id,
+                            phone: farmer.phone,
+                            surveyNumber: farmer.surveyNumber,
+                            email: farmer.email 
+                        })
+                    });
+                    serverResponse = await res.json();
+                    if (!res.ok) requestError = serverResponse.error || "Alert request failed.";
+                    if (serverResponse.dispatch) {
+                        setAlertLog(prev => [serverResponse.dispatch, ...prev]);
+                    }
+                } catch (e) {
+                    console.error("Backend error:", e);
+                    requestError = "Backend unavailable. Start the project using start.bat and retry.";
+                }
+
+                // Show modern glass modal confirmation
+                setLastModalAlert({
+                    farmerName: farmer.name,
+                    phone: farmer.phone,
+                    email: serverResponse?.dispatch?.channels?.email?.to || farmer.email,
+                    surveyNumber: farmer.surveyNumber,
+                    eta: eta,
+                    waUrl: waUrl,
+                    smsUrl: smsUrl,
+                    smsText: smsMsg,
+                    smtpStatus: serverResponse?.dispatch?.channels?.email?.detail || requestError || "No email result returned by the server.",
+                    emailStatus: serverResponse?.dispatch?.channels?.email?.status || "REQUEST_FAILED",
+                    smsStatus: serverResponse?.dispatch?.channels?.sms?.detail || requestError || "No SMS result returned by the server.",
+                    smsProviderStatus: serverResponse?.dispatch?.channels?.sms?.status || "REQUEST_FAILED"
+                });
+            };
+
+            // Mass 1-Click Broadcast
+            const handle1Click3WayBroadcast = async (targetTier) => {
+                setIsBroadcasting(true);
+                try {
+                    const res = await apiFetch('/api/alerts/broadcast-3way', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ targetZone: targetTier })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Broadcast request failed.");
+                    if (data.dispatches) {
+                        setAlertLog(prev => [...data.dispatches, ...prev]);
+                    }
+                    const smsAccepted = (data.dispatches || []).filter(d => d.channels?.sms?.status?.startsWith("TWILIO_") || d.channels?.sms?.status === "ACCEPTED_BY_FAST2SMS").length;
+                    const emailAccepted = (data.dispatches || []).filter(d => d.channels?.email?.status === "ACCEPTED_BY_SMTP").length;
+                    alert(`Broadcast requests processed for ${data.count || 0} farmers in ${targetTier}.\n\nSMS accepted by provider: ${smsAccepted}/${data.count || 0}\nEmail accepted by SMTP: ${emailAccepted}/${data.count || 0}\nWhatsApp links prepared: ${data.count || 0}\n\nProvider acceptance does not guarantee delivery. See Alert Logs for per-recipient errors.`);
+                } catch (e) {
+                    console.error(e);
+                    alert(`Broadcast failed: ${e.message || "the JalSuraksha API server is not responding."}`);
+                } finally {
+                    setIsBroadcasting(false);
+                }
+            };
+
+            // Register New Farmer
+            const handleRegisterSubmit = async (e) => {
+                e.preventDefault();
+                if (!regForm.name || !regForm.surveyNumber) {
+                    alert("Please fill in Farmer Name and Survey Number");
+                    return;
+                }
+
+                const cleanName = regForm.name.trim();
+                const newFarmer = {
+                    id: `FARM-${Date.now().toString().slice(-4)}`,
+                    name: cleanName,
+                    phone: regForm.phone.trim(),
+                    email: regForm.email.trim(),
+                    surveyNumber: regForm.surveyNumber.trim(),
+                    village: regForm.village.trim() || "Belagola Downstream",
+                    cropType: regForm.cropType,
+                    landAreaAcres: parseFloat(regForm.landAreaAcres),
+                    latitude: parseFloat(regForm.latitude),
+                    longitude: parseFloat(regForm.longitude),
+                    distanceFromRiverMeters: parseInt(regForm.distanceFromRiverMeters, 10),
+                    notes: regForm.notes || "Registered online"
+                };
+
+                try {
+                    const res = await apiFetch('/api/farmers/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newFarmer)
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Farmer registration failed.");
+                    if (data.allFarmers) {
+                        setFarmers(data.allFarmers);
+                    } else {
+                        setFarmers(prev => [newFarmer, ...prev]);
+                    }
+                } catch (err) {
+                    alert(err.message || "Registration failed. Check that the API server is running.");
+                    return;
+                }
+
+                setShowRegisterModal(false);
+                setActiveTab("dashboard");
+                setTimeout(() => {
+                    if (leafletMap.current) {
+                        leafletMap.current.flyTo([newFarmer.latitude, newFarmer.longitude], 14, {
+                            animate: true,
+                            duration: 1.2
+                        });
+                    }
+                }, 250);
+                alert(`✅ Farmland Registered for ${newFarmer.name}!\n\n📍 Survey No: ${newFarmer.surveyNumber}\n📱 Phone (SMS + WA): ${newFarmer.phone}\n✉️ Email (SMTP): ${newFarmer.email}\n\nCheck the GIS Map now — your farmland pin is highlighted!`);
+            };
+
+            // Quick Scenario Presets for Presentation
+            const applyScenario = (type) => {
+                if (type === "monsoon-red") {
+                    setDam(prev => ({
+                        ...prev,
+                        season: "monsoon",
+                        currentTmc: 48.20,
+                        waterLevelMeters: 124.60,
+                        inflowCusecs: 65000,
+                        outflowCusecs: 55000
+                    }));
+                } else if (type === "monsoon-orange") {
+                    setDam(prev => ({
+                        ...prev,
+                        season: "monsoon",
+                        currentTmc: 43.10,
+                        waterLevelMeters: 122.50,
+                        inflowCusecs: 38000,
+                        outflowCusecs: 28000
+                    }));
+                } else if (type === "winter-safe") {
+                    setDam(prev => ({
+                        ...prev,
+                        season: "winter",
+                        currentTmc: 45.50,
+                        waterLevelMeters: 123.40,
+                        inflowCusecs: 6000,
+                        outflowCusecs: 4500
+                    }));
+                } else if (type === "summer-drought") {
+                    setDam(prev => ({
+                        ...prev,
+                        season: "summer",
+                        currentTmc: 9.80,
+                        waterLevelMeters: 111.20,
+                        inflowCusecs: 800,
+                        outflowCusecs: 1200
+                    }));
+                }
+            };
+
+            const getAlertBadge = () => {
+                if (evaluation.alertLevel === "RED") {
+                    return (
+                        <div className="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-rose-500/20 border border-rose-500/50 text-rose-300 shadow-lg shadow-rose-500/20 animate-pulse">
+                            <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                            <span className="text-xs font-black tracking-wider uppercase">RED ALERT &bull; EVACUATE FLOODPLAIN</span>
+                        </div>
+                    );
+                } else if (evaluation.alertLevel === "ORANGE") {
+                    return (
+                        <div className="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 shadow-lg shadow-amber-500/20">
+                            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+                            <span className="text-xs font-black tracking-wider uppercase">ORANGE WARNING &bull; CAUTION BUFFER</span>
+                        </div>
+                    );
+                } else if (evaluation.alertLevel === "YELLOW") {
+                    return (
+                        <div className="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-yellow-500/20 border border-yellow-500/50 text-yellow-300">
+                            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                            <span className="text-xs font-black tracking-wider uppercase">YELLOW ADVISORY &bull; CATCHMENT SURGE</span>
+                        </div>
+                    );
+                }
+                return (
+                    <div className="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        <span className="text-xs font-black tracking-wider uppercase">GREEN NORMAL &bull; RESERVOIR SAFE</span>
+                    </div>
+                );
+            };
+
+            return (
+                <>
+                {(!authChecked || !adminAuthenticated) && (
+                    <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-[#06111b]/95 p-5 backdrop-blur-xl">
+                        <div className="w-full max-w-md rounded-3xl border border-cyan-400/20 bg-[#0d1c2a] p-7 shadow-2xl shadow-cyan-950/40">
+                            <div className="mb-6 flex items-center gap-3">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 text-2xl">🌊</div>
+                                <div><p className="text-xs font-bold uppercase tracking-[.2em] text-cyan-300">JalSuraksha</p><h1 className="text-2xl font-extrabold text-white">Staff sign in</h1></div>
+                            </div>
+                            {!authChecked ? (
+                                <p className="rounded-xl border border-slate-700 bg-slate-900 p-4 text-sm text-slate-300">Checking your admin session…</p>
+                            ) : (
+                                <form onSubmit={handleAdminLogin} className="space-y-4">
+                                    <label className="block text-sm font-semibold text-slate-200">Admin username
+                                        <input autoComplete="username" required value={adminUsername} onChange={e => setAdminUsername(e.target.value)} className="mt-1.5 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-3 text-white" />
+                                    </label>
+                                    <label className="block text-sm font-semibold text-slate-200">Admin password
+                                        <input type="password" autoComplete="current-password" required value={adminPassword} onChange={e => setAdminPassword(e.target.value)} className="mt-1.5 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-3 text-white" />
+                                    </label>
+                                    {adminLoginError && <p role="alert" className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-3 text-sm text-rose-200">{adminLoginError}</p>}
+                                    <button disabled={adminLoginBusy} className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-3 font-bold text-white disabled:opacity-60">{adminLoginBusy ? 'Signing in…' : 'Open operations dashboard'}</button>
+                                </form>
+                            )}
+                            <a className="mt-5 inline-flex text-sm font-semibold text-cyan-300 hover:text-cyan-100" href={`${window.location.hostname === 'localhost' ? 'http://127.0.0.1:5000' : window.location.origin}/farmer`}>Farmer and community portal →</a>
+                            <p className="mt-5 border-t border-slate-800 pt-4 text-xs leading-relaxed text-slate-400">Staff access protects farmer contact details and alert controls. Farmer registrations are submitted through the separate community portal.</p>
+                        </div>
+                    </div>
+                )}
+                <div className="flex flex-col min-h-screen">
+                    {/* HACKATHON GLASSO-HEADER */}
+                    <header className="backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/80 sticky top-0 z-50 px-4 lg:px-8 py-3.5 shadow-2xl">
+                        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex items-center space-x-3.5">
+                                <div className="relative">
+                                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 flex items-center justify-center text-xl shadow-xl shadow-cyan-500/30 border border-white/20">
+                                        🌊
+                                    </div>
+                                    <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-950 flex items-center justify-center text-[8px] font-bold text-white">
+                                        ✓
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2">
+                                        <h1 className="text-xl font-black tracking-tight text-white bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-slate-400">
+                                            JalSuraksha
+                                        </h1>
+                                        <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-700/60 shadow-sm">
+                                            Civil Capstone &bull; 5th Sem
+                                        </span>
+                                        <span className="hidden sm:inline-block text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-700/60">
+                                            Hackathon Edition ⚡
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-slate-400 font-medium">
+                                        Smart Dam Hydrology Telemetry &bull; GIS Geofencing &bull; 3-Way Instant Alerts (SMS + WhatsApp + Gmail SMTP)
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center flex-wrap gap-2.5">
+                                {getAlertBadge()}
+
+                                <a href={`${window.location.hostname === 'localhost' ? 'http://127.0.0.1:5000' : window.location.origin}/farmer`} target="_blank" rel="noreferrer" className="rounded-xl border border-cyan-700/60 bg-cyan-950/50 px-3 py-2 text-xs font-bold text-cyan-200 hover:bg-cyan-900/60">Farmer portal ↗</a>
+
+                                {/* SMTP STATUS PILL */}
+                                <div className="px-3 py-1.5 rounded-full text-xs font-mono bg-slate-900/90 border border-slate-700/70 text-slate-300 flex items-center space-x-2 shadow-inner" title="Configured via .env for live email dispatch">
+                                    <span className={`w-2 h-2 rounded-full ${envStatus.smtpConfigured ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+                                    <span>Email: <span className={`${envStatus.smtpConfigured ? 'text-emerald-400' : 'text-amber-300'} font-bold`}>{envStatus.smtpConfigured ? 'SMTP configured' : 'Not configured'}</span></span>
+                                    <span className="mx-1 text-slate-600">·</span>
+                                    <span>SMS: <span className={`${envStatus.smsConfigured ? 'text-emerald-400' : 'text-amber-300'} font-bold`}>{envStatus.smsConfigured ? envStatus.smsProvider : 'Not configured'}</span></span>
+                                </div>
+
+                                <button 
+                                    onClick={toggleSiren}
+                                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-md ${
+                                        sirenPlaying 
+                                            ? 'bg-rose-600 text-white animate-bounce shadow-rose-600/40 ring-2 ring-rose-400' 
+                                            : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700/80 hover:text-white'
+                                    }`}
+                                >
+                                    <span>🚨</span>
+                                    <span>{sirenPlaying ? "Silence Siren" : "Test Siren"}</span>
+                                </button>
+
+                                <button 
+                                    onClick={() => setShowRegisterModal(true)}
+                                    className="px-4 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white shadow-lg shadow-cyan-600/30 flex items-center space-x-1.5 transition-all transform hover:scale-[1.02] active:scale-95 border border-cyan-400/30"
+                                >
+                                    <span>➕</span>
+                                    <span>Register Farmland Plot</span>
+                                </button>
+                                <button onClick={handleAdminLogout} className="rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-xs font-bold text-slate-300 hover:text-white">Sign out</button>
+                            </div>
+                        </div>
+
+                        {/* Navigation Tabs */}
+                        <div className="max-w-7xl mx-auto flex space-x-2 mt-3.5 pt-2 border-t border-slate-800/80 text-xs font-semibold">
+                            <button 
+                                onClick={() => setActiveTab("dashboard")}
+                                className={`px-4 py-1.5 rounded-lg transition-all flex items-center space-x-2 ${
+                                    activeTab === 'dashboard' 
+                                        ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30 shadow-sm' 
+                                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                                }`}
+                            >
+                                <span>🗺️</span>
+                                <span>Dam Telemetry & Interactive GIS Map</span>
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab("farmers")}
+                                className={`px-4 py-1.5 rounded-lg transition-all flex items-center space-x-2 ${
+                                    activeTab === 'farmers' 
+                                        ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30 shadow-sm' 
+                                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                                }`}
+                            >
+                                <span>🌾</span>
+                                <span>Farmers & Land Survey Registry ({enrichedFarmers.length})</span>
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab("alerts")}
+                                className={`px-4 py-1.5 rounded-lg transition-all flex items-center space-x-2 ${
+                                    activeTab === 'alerts' 
+                                        ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30 shadow-sm' 
+                                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                                }`}
+                            >
+                                <span>📨</span>
+                                <span>3-Way Dispatched Logs ({alertLog.length})</span>
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab("civil")}
+                                className={`px-4 py-1.5 rounded-lg transition-all flex items-center space-x-2 ${
+                                    activeTab === 'civil' 
+                                        ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30 shadow-sm' 
+                                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                                }`}
+                            >
+                                <span>📐</span>
+                                <span>Civil Hydrology & Viva Calculations</span>
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* MAIN BODY CONTENT */}
+                    <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 space-y-6">
+
+                        {/* ============================================================ */}
+                        {/* TAB 1: MAIN DASHBOARD & GIS MAP                              */}
+                        {/* ============================================================ */}
+                        <div className={activeTab === "dashboard" ? "space-y-6 block" : "hidden"}>
+                            <section className="dashboard-intro" aria-labelledby="dashboard-title">
+                                <div>
+                                    <p className="dashboard-kicker">Operations center / KRS dam</p>
+                                    <h2 className="dashboard-title" id="dashboard-title">Reservoir overview</h2>
+                                    <p className="dashboard-subtitle">Hydrology, downstream risk and community alert operations for the Cauvery basin.</p>
+                                </div>
+                                <div className="dashboard-updated">
+                                    <strong>Krishnarajasagara · Karnataka</strong>
+                                    <span>Telemetry updated {dam.lastUpdated ? new Date(dam.lastUpdated).toLocaleString() : "just now"}</span>
+                                </div>
+                            </section>
+
+                            
+                                <section className="provider-setup" aria-label="Notification channels">
+                                    <p className="provider-setup-title">Notification channels</p>
+                                    <div className="provider-checks">
+                                        <span className="provider-check"><span className={`w-2 h-2 rounded-full ${envStatus.smtpConfigured ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>Email alerts <b>{envStatus.smtpConfigured ? "Ready" : "Not configured"}</b></span>
+                                        <span className="provider-check"><span className={`w-2 h-2 rounded-full ${envStatus.smsConfigured ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>SMS alerts <b>{envStatus.smsConfigured ? "Ready" : "Not configured"}</b></span>
+                                    </div>
+                                </section>
+
+                            {/* 4 MODERN METRIC CARDS */}
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                    {/* Metric 1 */}
+                                    <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 hover:border-cyan-500/40 rounded-2xl p-4 shadow-xl transition-all duration-300">
+                                        <div className="text-xs font-semibold text-slate-400 flex items-center justify-between">
+                                            <span>RESERVOIR STORAGE</span>
+                                            <span className="text-cyan-400 font-mono text-[11px] bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800">💧 TMC</span>
+                                        </div>
+                                        <div className="mt-2.5 flex items-baseline space-x-2">
+                                            <span className="text-3xl font-black text-white tracking-tight">{dam.currentTmc}</span>
+                                            <span className="text-xs text-slate-500 font-medium">/ {dam.maxCapacityTmc} TMC</span>
+                                        </div>
+                                        <div className="w-full bg-slate-800/80 h-2.5 rounded-full mt-3 overflow-hidden p-0.5 border border-slate-700/50">
+                                            <div 
+                                                className={`h-full rounded-full transition-all duration-500 shadow-sm ${
+                                                    evaluation.fillPercentage >= 95 ? 'bg-gradient-to-r from-rose-500 to-red-600' :
+                                                    evaluation.fillPercentage >= 85 ? 'bg-gradient-to-r from-amber-500 to-orange-600' :
+                                                    evaluation.fillPercentage >= 75 ? 'bg-gradient-to-r from-yellow-400 to-amber-500' : 
+                                                    'bg-gradient-to-r from-cyan-400 to-blue-500'
+                                                }`}
+                                                style={{ width: `${Math.min(evaluation.fillPercentage, 100)}%` }}
+                                            />
+                                        </div>
+                                        <div className="mt-1.5 flex justify-between text-[11px] text-slate-400">
+                                            <span>Dead Storage: 4.38 TMC</span>
+                                            <span className="font-bold text-slate-200">{evaluation.fillPercentage}% Full</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Metric 2 */}
+                                    <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 hover:border-cyan-500/40 rounded-2xl p-4 shadow-xl transition-all duration-300">
+                                        <div className="text-xs font-semibold text-slate-400 flex items-center justify-between">
+                                            <span>WATER LEVEL (RL)</span>
+                                            <span className="text-sky-400 font-mono text-[11px] bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-800">📏 Elevation</span>
+                                        </div>
+                                        <div className="mt-2.5 flex items-baseline space-x-2">
+                                            <span className="text-3xl font-black text-white tracking-tight">{dam.waterLevelMeters}</span>
+                                            <span className="text-xs text-slate-500 font-medium">m (FRL: {dam.fullReservoirLevelMeters}m)</span>
+                                        </div>
+                                        <div className="mt-3.5 text-xs text-slate-300 flex items-center justify-between">
+                                            <span>Freeboard Buffer:</span>
+                                            <span className="font-bold text-emerald-400 font-mono">{(dam.fullReservoirLevelMeters - dam.waterLevelMeters).toFixed(2)} m</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Metric 3 */}
+                                    <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 hover:border-cyan-500/40 rounded-2xl p-4 shadow-xl transition-all duration-300">
+                                        <div className="text-xs font-semibold text-slate-400 flex items-center justify-between">
+                                            <span>CATCHMENT INFLOW</span>
+                                            <span className="text-blue-400 font-mono text-[11px] bg-blue-950/60 px-1.5 py-0.5 rounded border border-blue-800">⬇️ Inflow</span>
+                                        </div>
+                                        <div className="mt-2.5 flex items-baseline space-x-2">
+                                            <span className="text-3xl font-black text-white tracking-tight">{dam.inflowCusecs.toLocaleString()}</span>
+                                            <span className="text-xs text-slate-500 font-medium">cusecs</span>
+                                        </div>
+                                        <div className="mt-3.5 text-xs text-slate-400 flex items-center justify-between">
+                                            <span>Catchment Runoff:</span>
+                                            <span className="font-semibold text-blue-300">Active Monsoon</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Metric 4 */}
+                                    <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 hover:border-cyan-500/40 rounded-2xl p-4 shadow-xl transition-all duration-300">
+                                        <div className="text-xs font-semibold text-slate-400 flex items-center justify-between">
+                                            <span>SPILLWAY DISCHARGE</span>
+                                            <span className="text-rose-400 font-mono text-[11px] bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800">🚪 Outflow</span>
+                                        </div>
+                                        <div className="mt-2.5 flex items-baseline space-x-2">
+                                            <span className="text-3xl font-black text-rose-400 tracking-tight">{dam.outflowCusecs.toLocaleString()}</span>
+                                            <span className="text-xs text-slate-500 font-medium">cusecs</span>
+                                        </div>
+                                        <div className="mt-3.5 text-xs text-slate-400 flex items-center justify-between">
+                                            <span>Wave Speed:</span>
+                                            <span className="font-bold text-rose-300 font-mono">
+                                                ~{dam.outflowCusecs > 50000 ? '11.5' : dam.outflowCusecs > 20000 ? '9.0' : '7.5'} km/h
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* MAP & CONTROL CONSOLE GRID */}
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    
+                                    {/* INTERACTIVE GIS MAP CONTAINER */}
+                                    <div className="lg:col-span-2 backdrop-blur-xl bg-slate-900/70 border border-slate-800/90 rounded-3xl p-4 flex flex-col shadow-2xl relative overflow-hidden">
+                                        {/* Map Header Toolbar */}
+                                        <div className="flex flex-wrap items-center justify-between gap-3 mb-3 z-20">
+                                            <div className="flex items-center space-x-2">
+                                                <div className="w-8 h-8 rounded-xl bg-cyan-950 border border-cyan-800/70 flex items-center justify-center text-cyan-400 text-sm">
+                                                    🗺️
+                                                </div>
+                                                <div>
+                                                    <h2 className="text-sm font-bold text-white flex items-center space-x-2">
+                                                        <span>Interactive GIS Buffer & Inundation Map</span>
+                                                    </h2>
+                                                    <div className="text-[11px] text-slate-400 flex items-center space-x-2">
+                                                        <span>Dam: <b className="text-cyan-400 font-mono">12.2707° N, 76.5742° E</b></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* FLOATING ACTION PILLS */}
+                                            <div className="flex items-center flex-wrap gap-2 text-xs">
+                                                {/* 🎯 MY LIVE GPS LOCATION BUTTON */}
+                                                <button 
+                                                    disabled={gpsLoading}
+                                                    onClick={() => detectCurrentLocation('map')}
+                                                    className="px-3.5 py-1.5 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-600/30 flex items-center space-x-1.5 transition-all transform active:scale-95 border border-cyan-400/40"
+                                                    title="Detect your device live GPS coordinates and pin your location on the map"
+                                                >
+                                                    <span className={gpsLoading ? "animate-spin" : ""}>🎯</span>
+                                                    <span>{gpsLoading ? "Detecting GPS..." : "My Current Location"}</span>
+                                                </button>
+
+                                                {/* Reset Map to Dam View */}
+                                                <button 
+                                                    onClick={() => {
+                                                        if (leafletMap.current) {
+                                                            leafletMap.current.flyTo([dam.latitude, dam.longitude], 13, { duration: 1.2 });
+                                                        }
+                                                    }}
+                                                    className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-semibold flex items-center space-x-1"
+                                                    title="Center view back on KRS Dam"
+                                                >
+                                                    <span>🌊</span>
+                                                    <span>Center Dam</span>
+                                                </button>
+
+                                                {/* Map Theme Toggle */}
+                                                <div className="flex items-center bg-slate-800/90 rounded-xl p-0.5 border border-slate-700/80">
+                                                    <button 
+                                                        onClick={() => setMapTheme('dark')}
+                                                        className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition ${mapTheme === 'dark' ? 'bg-cyan-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                    >
+                                                        Dark
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setMapTheme('street')}
+                                                        className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition ${mapTheme === 'street' ? 'bg-cyan-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                    >
+                                                        Street
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setMapTheme('satellite')}
+                                                        className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition ${mapTheme === 'satellite' ? 'bg-cyan-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                    >
+                                                        Satellite
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Leaflet Map DOM Element */}
+                                        <div className="relative flex-1 rounded-2xl overflow-hidden border border-slate-800 shadow-inner min-h-[500px]">
+                                            <div id="map"></div>
+
+                                            {/* FLOATING MAP GPS ACTION BUTTONS (Top Right) */}
+                                            <div className="absolute top-4 right-4 z-[500] flex items-center space-x-2">
+                                                <button 
+                                                    disabled={gpsLoading}
+                                                    onClick={() => detectCurrentLocation('map')}
+                                                    title="Acquire Real Browser / Hardware GPS"
+                                                    className="px-3 py-1.5 rounded-xl backdrop-blur-xl bg-slate-950/85 hover:bg-cyan-600/90 text-white border border-cyan-500/50 shadow-2xl flex items-center space-x-1.5 text-xs font-bold transition transform active:scale-95 group"
+                                                >
+                                                    <span className={gpsLoading ? "animate-spin text-cyan-400" : "text-sm group-hover:scale-125 transition"}>🎯</span>
+                                                    <span className="hidden sm:inline">{gpsLoading ? "Locating..." : "Locate Me"}</span>
+                                                </button>
+                                                <button 
+                                                    onClick={() => applySimulatedLocation('map')}
+                                                    title="Simulate Farmland in Belagola Downstream Danger Zone (1.85 km from KRS Dam)"
+                                                    className="px-2.5 py-1.5 rounded-xl backdrop-blur-xl bg-slate-950/85 hover:bg-amber-600/90 text-amber-300 hover:text-white border border-amber-500/40 shadow-2xl flex items-center space-x-1 text-xs font-semibold transition transform active:scale-95"
+                                                >
+                                                    <span>🌾</span>
+                                                    <span className="hidden sm:inline">Riverbank (1.8km)</span>
+                                                </button>
+                                                <button 
+                                                    onClick={() => {
+                                                        if (leafletMap.current) {
+                                                            leafletMap.current.flyTo([dam.latitude, dam.longitude], 13, { duration: 1.2 });
+                                                        }
+                                                    }}
+                                                    title="Recenter Map to KRS Dam"
+                                                    className="w-8 h-8 rounded-xl backdrop-blur-xl bg-slate-950/85 hover:bg-blue-600 text-white border border-slate-700 shadow-2xl flex items-center justify-center text-sm transition transform active:scale-95"
+                                                >
+                                                    🌊
+                                                </button>
+                                            </div>
+
+                                            {/* FLOATING LIVE GPS STATS HUD (If GPS detected) */}
+                                            {userLocation && (
+                                                <div className="absolute top-4 left-4 z-[500] max-w-sm backdrop-blur-xl bg-slate-950/85 border border-cyan-500/50 rounded-2xl p-3 shadow-2xl space-y-1.5 text-xs text-slate-200 animate-fadeIn">
+                                                    <div className="flex items-center justify-between border-b border-slate-800 pb-1">
+                                                        <span className="font-bold text-cyan-400 flex items-center space-x-1.5">
+                                                            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                                                            <span>Your Live Location Locked</span>
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-400 font-mono">{userLocation.timestamp}</span>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                                                        <div>Distance from Dam: <b className="text-white font-mono">{userLocation.distanceKm} km</b></div>
+                                                        <div>Flood Wave ETA: <b className="text-rose-400 font-mono">{userLocation.waveArrival.arrivalMinutes ? `${userLocation.waveArrival.arrivalMinutes}m` : 'Closed'}</b></div>
+                                                    </div>
+                                                    <div className="text-[11px] font-semibold flex items-center justify-between">
+                                                        <span>Zone: <span className="uppercase text-amber-300">{userLocation.riskTier}</span></span>
+                                                        <button 
+                                                            onClick={() => {
+                                                                if (leafletMap.current) {
+                                                                    leafletMap.current.flyTo([userLocation.lat, userLocation.lng], 15);
+                                                                }
+                                                            }}
+                                                            className="text-cyan-400 hover:underline text-[10px]"
+                                                        >
+                                                            Recenter GPS
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* MAP BUFFER LEGEND PILL (Bottom Left) */}
+                                            <div className="absolute bottom-4 left-4 z-[500] backdrop-blur-md bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center space-x-3 text-[11px] shadow-lg">
+                                                <span className="flex items-center space-x-1.5">
+                                                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                                    <span className="text-slate-300">0-2km Red Zone</span>
+                                                </span>
+                                                <span className="flex items-center space-x-1.5">
+                                                    <span className="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+                                                    <span className="text-slate-300">2-5km Orange</span>
+                                                </span>
+                                                <span className="flex items-center space-x-1.5">
+                                                    <span className="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                                                    <span className="text-slate-300">5-10km Yellow</span>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+                                            <p className="flex items-center space-x-1">
+                                                <span>💡</span>
+                                                <span>Click on any farm pin (🌾) to see landowner telemetry & instant <b>1-Click 3-Way Alert</b> button.</span>
+                                            </p>
+                                            <p className="text-cyan-400 font-mono text-[11px]">CWC Rule Curve &bull; IS 7323 Active</p>
+                                        </div>
+                                    </div>
+
+                                    {/* DAM AUTHORITY TELEMETRY CONTROL PANEL (JUDGE SHOWCASE) */}
+                                    <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/90 rounded-3xl p-5 flex flex-col space-y-4 shadow-2xl">
+                                        <div>
+                                            <div className="flex items-center justify-between">
+                                                <h2 className="text-sm font-bold text-white flex items-center space-x-2">
+                                                    <span className="text-cyan-400">⚙️</span>
+                                                    <span>Hydraulic Control Console</span>
+                                                </h2>
+                                                <span className="text-[10px] font-mono bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-800">
+                                                    Judge Mode
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-slate-400 mt-1">
+                                                Simulate dynamic catchment runoff, water storage (TMC), and spillway gate discharge.
+                                            </p>
+                                        </div>
+
+                                        {/* Operating Season Switcher (CWC Rule Curve) */}
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                                                <span>Operating Season (Rule Curve)</span>
+                                                <span className="text-[10px] text-cyan-400 font-mono uppercase">{dam.season}</span>
+                                            </label>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <button 
+                                                    onClick={() => setDam(p => ({ ...p, season: "monsoon" }))}
+                                                    className={`py-2 px-2 rounded-xl text-xs font-bold border text-center transition-all ${
+                                                        dam.season === "monsoon" 
+                                                            ? 'bg-blue-600/30 border-blue-500 text-blue-300 shadow-md shadow-blue-500/20' 
+                                                            : 'bg-slate-800/60 border-slate-700/80 text-slate-400 hover:bg-slate-800'
+                                                    }`}
+                                                >
+                                                    🌧️ Monsoon
+                                                </button>
+                                                <button 
+                                                    onClick={() => setDam(p => ({ ...p, season: "winter" }))}
+                                                    className={`py-2 px-2 rounded-xl text-xs font-bold border text-center transition-all ${
+                                                        dam.season === "winter" 
+                                                            ? 'bg-indigo-600/30 border-indigo-500 text-indigo-300 shadow-md shadow-indigo-500/20' 
+                                                            : 'bg-slate-800/60 border-slate-700/80 text-slate-400 hover:bg-slate-800'
+                                                    }`}
+                                                >
+                                                    ❄️ Winter
+                                                </button>
+                                                <button 
+                                                    onClick={() => setDam(p => ({ ...p, season: "summer" }))}
+                                                    className={`py-2 px-2 rounded-xl text-xs font-bold border text-center transition-all ${
+                                                        dam.season === "summer" 
+                                                            ? 'bg-amber-600/30 border-amber-500 text-amber-300 shadow-md shadow-amber-500/20' 
+                                                            : 'bg-slate-800/60 border-slate-700/80 text-slate-400 hover:bg-slate-800'
+                                                    }`}
+                                                >
+                                                    ☀️ Summer
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Storage TMC Slider */}
+                                        <div className="space-y-1.5 bg-slate-950/50 p-3 rounded-2xl border border-slate-800">
+                                            <div className="flex justify-between text-xs">
+                                                <span className="text-slate-300 font-semibold">Reservoir Storage (TMC)</span>
+                                                <span className="text-cyan-400 font-mono font-bold">{dam.currentTmc} TMC</span>
+                                            </div>
+                                            <input 
+                                                type="range" 
+                                                min="4.38" 
+                                                max="49.45" 
+                                                step="0.1" 
+                                                value={dam.currentTmc}
+                                                onChange={(e) => {
+                                                    const val = parseFloat(e.target.value);
+                                                    const level = (110 + (val / 49.45) * 15.5).toFixed(2);
+                                                    setDam(p => ({ ...p, currentTmc: val, waterLevelMeters: parseFloat(level) }));
+                                                }}
+                                                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                                            />
+                                        </div>
+
+                                        {/* Spillway Outflow Slider */}
+                                        <div className="space-y-1.5 bg-slate-950/50 p-3 rounded-2xl border border-slate-800">
+                                            <div className="flex justify-between text-xs">
+                                                <span className="text-slate-300 font-semibold">Spillway Gate Outflow</span>
+                                                <span className="text-rose-400 font-mono font-bold">{dam.outflowCusecs.toLocaleString()} cusecs</span>
+                                            </div>
+                                            <input 
+                                                type="range" 
+                                                min="0" 
+                                                max="90000" 
+                                                step="1000" 
+                                                value={dam.outflowCusecs}
+                                                onChange={(e) => setDam(p => ({ ...p, outflowCusecs: parseInt(e.target.value, 10) }))}
+                                                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                                            />
+                                            <div className="text-[10px] text-slate-500 flex justify-between pt-1">
+                                                <span>Celerity: ~{dam.outflowCusecs > 50000 ? '11.5' : dam.outflowCusecs > 20000 ? '9.0' : '7.5'} km/h</span>
+                                                <span className="text-slate-400 font-mono">Q = C_d·L·H^1.5</span>
+                                            </div>
+                                        </div>
+
+                                        {/* 1-Click Demo Scenarios */}
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-semibold text-slate-400">1-Click Hackathon Scenarios</label>
+                                            <div className="grid grid-cols-2 gap-2 text-xs">
+                                                <button 
+                                                    onClick={() => applyScenario('monsoon-red')}
+                                                    className="p-2.5 rounded-xl bg-rose-950/50 hover:bg-rose-900/60 border border-rose-800/80 text-rose-200 text-left transition"
+                                                >
+                                                    <div className="font-bold text-[11px]">🚨 Red Flood Hazard</div>
+                                                    <div className="text-[10px] text-rose-400">48.2 TMC, 55k cusecs</div>
+                                                </button>
+                                                <button 
+                                                    onClick={() => applyScenario('monsoon-orange')}
+                                                    className="p-2.5 rounded-xl bg-amber-950/50 hover:bg-amber-900/60 border border-amber-800/80 text-amber-200 text-left transition"
+                                                >
+                                                    <div className="font-bold text-[11px]">⚠️ Inflow Warning</div>
+                                                    <div className="text-[10px] text-amber-400">43.1 TMC, 28k cusecs</div>
+                                                </button>
+                                                <button 
+                                                    onClick={() => applyScenario('winter-safe')}
+                                                    className="p-2.5 rounded-xl bg-indigo-950/50 hover:bg-indigo-900/60 border border-indigo-800/80 text-indigo-200 text-left transition"
+                                                >
+                                                    <div className="font-bold text-[11px]">🌾 Winter Rabi Pool</div>
+                                                    <div className="text-[10px] text-indigo-400">45.5 TMC, 4.5k cusecs</div>
+                                                </button>
+                                                <button 
+                                                    onClick={() => applyScenario('summer-drought')}
+                                                    className="p-2.5 rounded-xl bg-amber-950/50 hover:bg-amber-900/60 border border-amber-800/80 text-amber-200 text-left transition"
+                                                >
+                                                    <div className="font-bold text-[11px]">☀️ Summer Ration</div>
+                                                    <div className="text-[10px] text-amber-400">9.8 TMC, 1.2k cusecs</div>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* THE ULTIMATE 1-CLICK 3-WAY ALERT BUTTON */}
+                                        <div className="space-y-2 pt-3 border-t border-slate-800">
+                                            <div className="flex items-center justify-between">
+                                                <label className="text-xs font-black tracking-wide text-rose-400 uppercase flex items-center space-x-1.5">
+                                                    <span>⚡</span>
+                                                    <span>1-Click 3-Way Broadcast</span>
+                                                </label>
+                                                <span className="text-[10px] bg-rose-950 text-rose-300 border border-rose-800/80 px-2 py-0.5 rounded-full font-bold">
+                                                    SMS+WA+Email
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 leading-tight">
+                                                Dispatches simultaneously across <b>SMS (160c Feature Phone)</b> + <b>WhatsApp</b> + <b>Gmail SMTP (.env)</b>!
+                                            </p>
+
+                                            <div className="space-y-2 pt-1">
+                                                <button 
+                                                    disabled={isBroadcasting}
+                                                    onClick={() => handle1Click3WayBroadcast("0-2km")}
+                                                    className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs flex items-center justify-center space-x-2 shadow-xl shadow-rose-600/40 transition transform active:scale-95 border border-white/20"
+                                                >
+                                                    <span>🚨</span>
+                                                    <span>{isBroadcasting ? "Sending Across 3 Channels..." : "1-CLICK 3-WAY: 0-2 km Red Zone"}</span>
+                                                </button>
+                                                <button 
+                                                    disabled={isBroadcasting}
+                                                    onClick={() => handle1Click3WayBroadcast("2-5km")}
+                                                    className="w-full py-2 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs flex items-center justify-center space-x-1.5 transition border border-amber-500/30 shadow"
+                                                >
+                                                    <span>⚠️</span>
+                                                    <span>1-Click 3-Way: 2-5 km Orange Buffer</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {/* ============================================================ */}
+                        {/* TAB 2: FARMERS & LAND SURVEY REGISTRY                        */}
+                        {/* ============================================================ */}
+                        <div className={activeTab === "farmers" ? "backdrop-blur-xl bg-slate-900/70 border border-slate-800/90 rounded-3xl p-6 space-y-6 shadow-2xl block" : "hidden"}>
+                                <div className="flex flex-wrap items-center justify-between gap-4">
+                                    <div>
+                                        <h2 className="text-lg font-black text-white flex items-center space-x-2">
+                                            <span>🌾</span>
+                                            <span>Registered Farmers & Downstream Agricultural Lands</span>
+                                        </h2>
+                                        <p className="text-xs text-slate-400 mt-1">
+                                            Persistent Land Registry &bull; Phone (160-char SMS for keypad phones & WhatsApp) &bull; Registered Email (SMTP via .env).
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center space-x-3">
+                                        {/* Search Filter */}
+                                        <input 
+                                            type="text"
+                                            placeholder="Search name, survey no, village..."
+                                            value={searchFilter}
+                                            onChange={(e) => setSearchFilter(e.target.value)}
+                                            className="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 w-64"
+                                        />
+                                        <button 
+                                            onClick={() => setShowRegisterModal(true)}
+                                            className="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-600/30 flex items-center space-x-1"
+                                        >
+                                            <span>➕</span>
+                                            <span>Register Farmland</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Table */}
+                                <div className="overflow-x-auto rounded-2xl border border-slate-800/90">
+                                    <table className="w-full text-left border-collapse text-xs">
+                                        <thead>
+                                            <tr className="border-b border-slate-800 text-slate-400 bg-slate-950/80 font-semibold">
+                                                <th className="py-3 px-4">Farmer & Landowner</th>
+                                                <th className="py-3 px-4">Survey No & Location</th>
+                                                <th className="py-3 px-4">Phone (SMS & WhatsApp)</th>
+                                                <th className="py-3 px-4">Registered Email</th>
+                                                <th className="py-3 px-4">Dam Distance & ETA</th>
+                                                <th className="py-3 px-4">Risk Tier</th>
+                                                <th className="py-3 px-4 text-right">⚡ 1-Click Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
+                                            {filteredFarmers.map(f => {
+                                                const isVinay = f.name && f.name.toLowerCase().includes('vinay');
+                                                const wave = f.riskAssessment.waveArrival;
+                                                const eta = wave.arrivalMinutes ? `${wave.arrivalMinutes} mins` : "Closed";
+                                                
+                                                let badgeClass = "bg-emerald-950/70 text-emerald-400 border-emerald-800";
+                                                if (f.riskAssessment.riskTier === "CRITICAL") {
+                                                    badgeClass = "bg-rose-950/80 text-rose-300 border-rose-800 font-bold animate-pulse";
+                                                } else if (f.riskAssessment.riskTier === "WARNING") {
+                                                    badgeClass = "bg-amber-950/80 text-amber-300 border-amber-800 font-semibold";
+                                                }
+
+                                                return (
+                                                    <tr key={f.id} className={`hover:bg-slate-800/40 transition ${isVinay ? 'bg-cyan-950/30 border-l-4 border-l-cyan-400' : ''}`}>
+                                                        <td className="py-3.5 px-4">
+                                                            <div className="font-bold text-white flex items-center space-x-1.5">
+                                                                <span>{f.name}</span>
+                                                                {isVinay && (
+                                                                    <span className="text-[10px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 px-1.5 py-0.5 rounded-full font-bold">
+                                                                        ⭐ You
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="text-[11px] text-slate-500">{f.cropType} &bull; {f.landAreaAcres} Acres</div>
+                                                        </td>
+                                                        <td className="py-3.5 px-4">
+                                                            <div className="font-mono text-cyan-300 font-bold text-xs">Survey: {f.surveyNumber}</div>
+                                                            <div className="text-[11px] text-slate-400">{f.village} · {f.district || 'Karnataka'}</div>
+                                                            <div className="text-[10px] text-slate-500">GPS: {Number(f.latitude).toFixed(5)}, {Number(f.longitude).toFixed(5)}</div>
+                                                        </td>
+                                                        <td className="py-3.5 px-4 font-mono text-slate-300">
+                                                            <div>{f.phone}</div>
+                                                            <div className="text-[10px] text-emerald-400 font-semibold">SMS + WhatsApp Ready</div>
+                                                        </td>
+                                                        <td className="py-3.5 px-4 font-mono text-slate-400 text-[11px]">
+                                                            <div>{f.email}</div>
+                                                            <div className="text-[10px] text-blue-400 font-semibold">SMTP Active (.env)</div>
+                                                        </td>
+                                                        <td className="py-3.5 px-4">
+                                                            <div className="font-mono font-bold text-white">{f.distanceKm} km</div>
+                                                            <div className="font-mono text-rose-400 font-bold text-[11px]">ETA: {eta}</div>
+                                                        </td>
+                                                        <td className="py-3.5 px-4">
+                                                            <span className={`px-2.5 py-1 rounded-full text-[10px] uppercase border font-bold ${badgeClass}`}>
+                                                                {f.riskAssessment.riskTier}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-3.5 px-4 text-right">
+                                                            <button 
+                                                                onClick={() => handleSingleFarmer3WayAlert(f)}
+                                                                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-rose-600/30 transition transform active:scale-95 border border-white/20"
+                                                                title="Simultaneously dispatches SMS text message, WhatsApp, and SMTP Email in 1 click"
+                                                            >
+                                                                <span>⚡</span>
+                                                                <span>Send 3-Way Alert</span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        {/* ============================================================ */}
+                        {/* TAB 3: ALERT DISPATCH QUEUE                                  */}
+                        {/* ============================================================ */}
+                        <div className={activeTab === "alerts" ? "backdrop-blur-xl bg-slate-900/70 border border-slate-800/90 rounded-3xl p-6 space-y-6 shadow-2xl block" : "hidden"}>
+                                <div className="flex flex-wrap items-center justify-between gap-4">
+                                    <div>
+                                        <h2 className="text-lg font-black text-white flex items-center space-x-2">
+                                            <span>📨</span>
+                                            <span>Multi-Channel Early Warning Dispatch Logs</span>
+                                        </h2>
+                                        <p className="text-xs text-slate-400 mt-1">Detailed verification for SMS (keypad phones), WhatsApp, and Gmail SMTP Email.</p>
+                                    </div>
+                                    <div className="flex space-x-2">
+                                        <button 
+                                            onClick={() => handle1Click3WayBroadcast("0-2km")}
+                                            className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow"
+                                        >
+                                            ⚡ Trigger 0-2km 3-Way Broadcast
+                                        </button>
+                                        <button 
+                                            onClick={() => setAlertLog([])}
+                                            className="px-3.5 py-1.5 rounded-xl text-xs text-slate-400 hover:text-white bg-slate-800"
+                                        >
+                                            Clear Logs
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {alertLog.length === 0 ? (
+                                    <div className="text-center py-16 text-slate-500 border border-dashed border-slate-800 rounded-2xl">
+                                        <div className="text-4xl mb-2">📭</div>
+                                        <div className="font-bold text-slate-300 text-sm">No alerts dispatched yet</div>
+                                        <div className="text-xs text-slate-500 mt-1">Click the "⚡ 1-Click 3-Way Alert" button on any farmer or broadcast from the dashboard.</div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {alertLog.map((log) => (
+                                            <div key={log.id} className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3 shadow-lg">
+                                                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="font-bold text-white text-sm">{log.farmerName}</span>
+                                                        <span className="text-xs font-mono text-cyan-400 font-bold">Survey: {log.surveyNumber}</span>
+                                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-800 uppercase font-black">{log.tier}</span>
+                                                    </div>
+                                                    <span className="text-[11px] text-slate-500 font-mono">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                                                    {/* SMS Status */}
+                                                    <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                                                        <div className="font-bold text-emerald-400 flex items-center justify-between">
+                                                            <span>📱 SMS (Feature Phone)</span>
+                                                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">{log.channels?.sms?.status || 'Unknown'}</span>
+                                                        </div>
+                                                        <div className="text-[11px] text-slate-300 font-mono">
+                                                            {log.channels && log.channels.sms ? log.channels.sms.smsText : `ALERT! KRS Dam outflow active. Flood reaches Survey ${log.surveyNumber}. Evacuate!`}
+                                                        </div>
+                                                        <div className="text-[10px] text-slate-500">{log.channels?.sms?.detail || 'No SMS provider result available.'}</div>
+                                                    </div>
+
+                                                    {/* WhatsApp Status */}
+                                                    <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                                                        <div className="font-bold text-emerald-400 flex items-center justify-between">
+                                                            <span>💬 WhatsApp Alert</span>
+                                                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">Link only</span>
+                                                        </div>
+                                                        <div className="text-[11px] text-slate-400">
+                                                            Prepared chat link. Sender must tap Send in WhatsApp.
+                                                        </div>
+                                                        {log.whatsappUrl && (
+                                                            <a href={log.whatsappUrl} target="_blank" className="inline-block text-[11px] text-emerald-400 hover:underline font-semibold pt-1">
+                                                                Open WhatsApp Chat 📲
+                                                            </a>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Email Status */}
+                                                    <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                                                        <div className="font-bold text-cyan-400 flex items-center justify-between">
+                                                            <span>✉️ Email (Gmail SMTP)</span>
+                                                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono">{log.channels?.email?.status || 'Unknown'}</span>
+                                                        </div>
+                                                        <div className="text-[11px] text-slate-300 font-mono truncate">
+                                                            To: {log.email || 'No recipient email'}
+                                                        </div>
+                                                        <div className="text-[10px] text-emerald-400 font-semibold">
+                                                            {log.channels && log.channels.email ? log.channels.email.detail : 'No email provider result available.'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                        {/* ============================================================ */}
+                        {/* TAB 4: CIVIL HYDROLOGICAL FORMULAS & VIVA SHEET              */}
+                        {/* ============================================================ */}
+                        <div className={activeTab === "civil" ? "backdrop-blur-xl bg-slate-900/70 border border-slate-800/90 rounded-3xl p-6 space-y-6 shadow-2xl block" : "hidden"}>
+                                <div>
+                                    <h2 className="text-lg font-black text-white flex items-center space-x-2">
+                                        <span>📐</span>
+                                        <span>Civil Engineering Hydrology & Hydraulic Formulations</span>
+                                    </h2>
+                                    <p className="text-xs text-slate-400 mt-1">Mathematical equations and engineering standards implemented in this project for external examiner evaluation.</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                                    <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-3">
+                                        <div className="font-bold text-sm text-cyan-400 flex items-center space-x-2">
+                                            <span>1.</span>
+                                            <span>Flood Wave Travel Time (Saint-Venant Celerity)</span>
+                                        </div>
+                                        <p className="text-slate-300 leading-relaxed">
+                                            When spillway gates open, the flood wave propagates down the alluvial river channel according to the Saint-Venant shallow water wave approximation:
+                                        </p>
+                                        <div className="p-3 bg-slate-900 font-mono text-cyan-300 rounded-xl border border-slate-800">
+                                            c = √(g · y_m) + v_0<br/>
+                                            T_arrival = Distance / v_wave
+                                        </div>
+                                        <p className="text-slate-400">
+                                            For natural alluvial river beds with bed slope S_0 ≈ 0.0006, empirical celerity ranges from <b>2.1 m/s (7.5 km/h)</b> at base discharge up to <b>3.9 m/s (14.0 km/h)</b> at 80,000+ cusecs.
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-3">
+                                        <div className="font-bold text-sm text-cyan-400 flex items-center space-x-2">
+                                            <span>2.</span>
+                                            <span>Rural Telecom 160-Char GSM SMS Rationale</span>
+                                        </div>
+                                        <p className="text-slate-300 leading-relaxed">
+                                            Why text message is critical: Most rural Indian farmers rely on basic keypad / feature phones without 4G or smartphones.
+                                        </p>
+                                        <div className="p-3 bg-slate-900 font-mono text-emerald-300 rounded-xl border border-slate-800">
+                                            GSM 7-bit standard: Max 160 characters per packet<br/>
+                                            Guarantees zero truncation on 2G rural telecom!
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-3">
+                                        <div className="font-bold text-sm text-cyan-400 flex items-center space-x-2">
+                                            <span>3.</span>
+                                            <span>Haversine Great-Circle Geofencing</span>
+                                        </div>
+                                        <p className="text-slate-300 leading-relaxed">
+                                            Calculates precise spherical distance from the dam crest to individual farmer survey plots:
+                                        </p>
+                                        <div className="p-3 bg-slate-900 font-mono text-cyan-300 rounded-xl border border-slate-800">
+                                            a = sin²(Δφ/2) + cos φ₁ · cos φ₂ · sin²(Δλ/2)<br/>
+                                            d = 2R · atan2(√a, √(1−a))
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-3">
+                                        <div className="font-bold text-sm text-cyan-400 flex items-center space-x-2">
+                                            <span>4.</span>
+                                            <span>CWC Rule Curve & IS 7323 Code of Practice</span>
+                                        </div>
+                                        <p className="text-slate-300 leading-relaxed">
+                                            IS 7323 Code of Practice for Reservoir Operation governs dynamic seasonal water retention:
+                                        </p>
+                                        <ul className="list-disc pl-4 text-slate-400 space-y-1">
+                                            <li><b>Monsoon</b>: Cushion of 10-15% retained to absorb sudden flash runoff.</li>
+                                            <li><b>Winter (Post-Monsoon)</b>: Storage maximized to 98% for Rabi crop command.</li>
+                                            <li><b>Summer</b>: Conservation pool strictly rationed for drinking needs.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                    </main>
+
+                    {/* CUSTOM ALERT RESULT MODAL (NO BLOCKING POPUPS!) */}
+                    {lastModalAlert && (
+                        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+                            <div className="backdrop-blur-2xl bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-fadeIn">
+                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-xl">⚡</span>
+                                        <h3 className="text-base font-bold text-white">1-Click 3-Way Alert Status</h3>
+                                    </div>
+                                    <button onClick={() => setLastModalAlert(null)} className="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                                </div>
+
+                                <div className="space-y-3 text-xs">
+                                    <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800 space-y-1">
+                                        <div className="font-bold text-white text-sm">{lastModalAlert.farmerName}</div>
+                                        <div className="text-slate-400 font-mono">Survey No: <span className="text-cyan-300 font-bold">{lastModalAlert.surveyNumber}</span> &bull; ETA: <span className="text-rose-400 font-bold">{lastModalAlert.eta}</span></div>
+                                    </div>
+
+                                    {/* Email */}
+                                    <div className="p-3 rounded-2xl bg-blue-950/40 border border-blue-800/60 space-y-1.5">
+                                        <div className="font-bold text-blue-300 flex items-center justify-between">
+                                            <span>✉️ Email Status (Gmail SMTP)</span>
+                                            <span className="text-[10px] bg-blue-900 text-blue-200 px-1.5 py-0.5 rounded font-mono font-bold">{lastModalAlert.emailStatus}</span>
+                                        </div>
+                                        <div className="text-slate-200 font-mono text-[11px] truncate">To: {lastModalAlert.email}</div>
+                                        <div className="text-[11px] text-slate-300 font-semibold">{lastModalAlert.smtpStatus}</div>
+                                    </div>
+
+                                    {/* WhatsApp */}
+                                    <div className="p-3 rounded-2xl bg-emerald-950/40 border border-emerald-800/60 space-y-1.5">
+                                        <div className="font-bold text-emerald-300 flex items-center justify-between">
+                                            <span>💬 WhatsApp Status</span>
+                                            <span className="text-[10px] bg-emerald-900 text-emerald-200 px-1.5 py-0.5 rounded font-mono font-bold">Direct Tab</span>
+                                        </div>
+                                        <div className="text-slate-300 text-[11px]">Chat tab opened in your browser for <b>{lastModalAlert.phone}</b>.</div>
+                                        <a href={lastModalAlert.waUrl} target="_blank" className="block text-center py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow">
+                                            Open WhatsApp Chat Now 📲
+                                        </a>
+                                    </div>
+
+                                    {/* SMS */}
+                                    <div className="p-3 rounded-2xl bg-amber-950/40 border border-amber-800/60 space-y-1.5">
+                                        <div className="font-bold text-amber-300 flex items-center justify-between">
+                                            <span>📱 SMS Status (Keypad Phone)</span>
+                                            <span className="text-[10px] bg-amber-900 text-amber-200 px-1.5 py-0.5 rounded font-mono font-bold">{lastModalAlert.smsProviderStatus}</span>
+                                        </div>
+                                        <div className="text-slate-300 font-mono text-[11px] bg-slate-900 p-2 rounded-xl border border-slate-800">
+                                            "{lastModalAlert.smsText}"
+                                        </div>
+                                        <div className="text-[11px] text-slate-300">{lastModalAlert.smsStatus}</div>
+                                        {lastModalAlert.smsProviderStatus === "NOT_CONFIGURED" && <a href={lastModalAlert.smsUrl} className="block text-center py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-xs transition shadow">Open SMS app to send manually</a>}
+                                    </div>
+                                </div>
+
+                                <div className="pt-2">
+                                    <button onClick={() => setLastModalAlert(null)} className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition">
+                                        Done
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* REGISTRATION MODAL WITH LIVE GPS DETECT */}
+                    {showRegisterModal && (
+                        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+                            <div className="backdrop-blur-2xl bg-slate-900 border border-slate-700/80 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-fadeIn">
+                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                    <h3 className="text-base font-bold text-white flex items-center space-x-2">
+                                        <span>🌾</span>
+                                        <span>Register Farmland Plot</span>
+                                    </h3>
+                                    <button onClick={() => setShowRegisterModal(false)} className="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                                </div>
+                                <p className="text-xs text-slate-400">
+                                    Adds the landowner to the 3-Way simultaneous automated alert system and pins to the GIS Map.
+                                </p>
+
+                                <form onSubmit={handleRegisterSubmit} className="space-y-3.5 text-xs">
+                                    {/* 🎯 AUTO-DETECT GPS LOCATION BUTTON */}
+                                    <div className="p-3 rounded-2xl bg-gradient-to-r from-cyan-950/70 to-blue-950/70 border border-cyan-500/40 flex items-center justify-between">
+                                        <div>
+                                            <div className="font-bold text-cyan-300 flex items-center space-x-1.5">
+                                                <span>🎯</span>
+                                                <span>Live GPS Device Locator</span>
+                                            </div>
+                                            <div className="text-[11px] text-slate-400">Auto-fill coordinates using device sensor</div>
+                                        </div>
+                                        <div className="flex space-x-2">
+                                            <button 
+                                                type="button"
+                                                disabled={gpsLoading}
+                                                onClick={() => detectCurrentLocation('register')}
+                                                className="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-md transition flex items-center space-x-1"
+                                                title="Capture coordinates using your device/browser GPS"
+                                            >
+                                                <span className={gpsLoading ? "animate-spin" : ""}>📍</span>
+                                                <span>{gpsLoading ? "Locating..." : "Device GPS"}</span>
+                                            </button>
+                                            <button 
+                                                type="button"
+                                                onClick={() => applySimulatedLocation('register')}
+                                                className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-md transition flex items-center space-x-1"
+                                                title="Pre-fill Belagola Downstream coordinates (1.85 km from KRS Dam) for hackathon demo"
+                                            >
+                                                <span>🌾</span>
+                                                <span>Belagola (1.8km)</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-slate-300 font-semibold">Farmer Full Name *</label>
+                                            <input 
+                                                type="text" 
+                                                required 
+                                                value={regForm.name} 
+                                                onChange={e => setRegForm({ ...regForm, name: e.target.value })}
+                                                placeholder="e.g. Vinay Babannavar"
+                                                className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-cyan-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-slate-300 font-semibold">Mobile (SMS & WhatsApp) *</label>
+                                            <input 
+                                                type="tel" 
+                                                required 
+                                                pattern="(\+91)?[6-9][0-9]{9}|91[6-9][0-9]{9}"
+                                                title="Enter a valid Indian mobile number, such as +919876543210"
+                                                value={regForm.phone} 
+                                                onChange={e => setRegForm({ ...regForm, phone: e.target.value })}
+                                                placeholder="+918971093279"
+                                                className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono focus:outline-none focus:border-cyan-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* EMAIL FIELD */}
+                                    <div>
+                                        <label className="text-slate-300 font-semibold flex items-center justify-between">
+                                            <span>Email Address (For SMTP Real Email Alerts) *</span>
+                                            <span className="text-[10px] text-cyan-400 font-normal">Sent via Gmail SMTP (.env)</span>
+                                        </label>
+                                        <input 
+                                            type="email" 
+                                            required 
+                                            value={regForm.email} 
+                                            onChange={e => setRegForm({ ...regForm, email: e.target.value })}
+                                            placeholder="vinaybabannavar70@gmail.com"
+                                            className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-cyan-300 font-mono focus:outline-none focus:border-cyan-500"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-slate-300 font-semibold">Land Survey Number *</label>
+                                            <input 
+                                                type="text" 
+                                                required 
+                                                value={regForm.surveyNumber} 
+                                                onChange={e => setRegForm({ ...regForm, surveyNumber: e.target.value })}
+                                                placeholder="e.g. 142/3"
+                                                className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-cyan-300 font-mono font-bold focus:outline-none focus:border-cyan-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-slate-300 font-semibold">Village / Taluk</label>
+                                            <input 
+                                                type="text" 
+                                                value={regForm.village} 
+                                                onChange={e => setRegForm({ ...regForm, village: e.target.value })}
+                                                placeholder="e.g. Belagola Downstream"
+                                                className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-cyan-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-slate-300 font-semibold">Crop Type</label>
+                                            <select 
+                                                value={regForm.cropType} 
+                                                onChange={e => setRegForm({ ...regForm, cropType: e.target.value })}
+                                                className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-cyan-500"
+                                            >
+                                                <option value="Sugarcane">Sugarcane</option>
+                                                <option value="Paddy (Rice)">Paddy (Rice)</option>
+                                                <option value="Banana & Turmeric">Banana & Turmeric</option>
+                                                <option value="Vegetables">Vegetables</option>
+                                                <option value="Floriculture">Floriculture</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-slate-300 font-semibold">Land Area (Acres)</label>
+                                            <input 
+                                                type="number" 
+                                                step="0.1" 
+                                                value={regForm.landAreaAcres} 
+                                                onChange={e => setRegForm({ ...regForm, landAreaAcres: e.target.value })}
+                                                className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono focus:outline-none focus:border-cyan-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-slate-300 font-semibold">Latitude (GPS)</label>
+                                            <input 
+                                                type="number" 
+                                                step="0.0001" 
+                                                value={regForm.latitude} 
+                                                onChange={e => setRegForm({ ...regForm, latitude: e.target.value })}
+                                                className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono focus:outline-none focus:border-cyan-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-slate-300 font-semibold">Longitude (GPS)</label>
+                                            <input 
+                                                type="number" 
+                                                step="0.0001" 
+                                                value={regForm.longitude} 
+                                                onChange={e => setRegForm({ ...regForm, longitude: e.target.value })}
+                                                className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono focus:outline-none focus:border-cyan-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-end space-x-2 pt-3 border-t border-slate-800">
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setShowRegisterModal(false)}
+                                            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button 
+                                            type="submit" 
+                                            className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white font-bold shadow-lg shadow-cyan-600/30"
+                                        >
+                                            Confirm Registration & Pin to Map
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* FOOTER */}
+                    <footer className="backdrop-blur-xl bg-slate-950/80 border-t border-slate-800/80 py-4 px-6 text-center text-xs text-slate-500">
+                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+                            <div>JalSuraksha: Smart Dam Monitoring & 3-Way Flood Early Warning System (SMS + WhatsApp + Gmail SMTP)</div>
+                            <div>Department of Civil Engineering &bull; 5th Semester Capstone Project &bull; IS 7323 & CWC Compliant</div>
+                        </div>
+                    </footer>
+                </div>
+                </>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
